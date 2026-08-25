@@ -33,6 +33,8 @@ These files are modified from the original — see *What changed* below.
 |---|---|---|
 | `atera_wholeslide_cells.h5ad` | 19.9 MB | All 170,057 cells. Aligned centroids in `obsm['spatial']`, vendor `graphclust` and `kmeans_10`, `obsm['X_umap']`, `obsm['X_pca']`, our `cell_type` labels, and a 69-gene marker counts matrix. No images. |
 | `atera_crop.zarr.zip` | 18.0 MB | A `SpatialData` store for a 2,000 µm window: `he` (3, 1826, 1826), `he_zoom` (3, 1096, 1096) at native 0.2738 µm/px, 16,006 cell boundary polygons, and a (16006, 69) table. One `"global"` coordinate system, in micrometres. |
+| `atera_crop_lr.h5ad` | 5.4 MB | The **same 16,006 Crop cells** as `atera_crop.zarr.zip`, with the same `cell_type` labels and the same `obsm['spatial']`, but carrying a different panel: raw sparse counts for 1,673 connectomeDB2020 ligands and receptors that Atera measures. Built for ligand–receptor analysis, which the 69-gene panel cannot support. No images. |
+| `cci_panel_genes.txt` | — | The 1,673 gene symbols in that panel, and how many complete ligand–receptor pairs each database contributes. |
 | `atera_cluster_annotation.csv` | — | The 34 vendor clusters → 12 named cell types, with scores, margins and `low_confidence` flags. |
 | `crop_window.json` | — | Exactly which window was chosen and why, including its cell-type composition. |
 | `manifest.json` | — | Sizes, sha256 checksums and origins. |
@@ -51,10 +53,24 @@ z = hf_hub_download(REPO, "atera_crop.zarr.zip", repo_type="dataset")
 with zipfile.ZipFile(z) as f:          # unzip first -- see the note below
     f.extractall("atera_crop")
 sdata = sd.read_zarr(next(pathlib.Path("atera_crop").glob("*.zarr")))
+
+# The ligand-receptor view of the same cells.
+lr = ad.read_h5ad(hf_hub_download(REPO, "atera_crop_lr.h5ad", repo_type="dataset"))
+lr.obs["imagecol"] = lr.obsm["spatial"][:, 0]   # stlearn reads positions from
+lr.obs["imagerow"] = lr.obsm["spatial"][:, 1]   # these, not from obsm["spatial"]
 ```
 
 **`spatialdata.read_zarr()` cannot open a `.zarr.zip` in place** (its store resolver handles
 LocalStore/FsspecStore and then wants `store.root`, which `ZipStore` lacks). Extract first.
+
+### Why there are two views of the same 16,006 cells
+
+`atera_crop.zarr.zip` carries a 69-gene panel chosen to name cell types. Intersected with
+connectomeDB2020 that leaves **four** complete literature-supported ligand–receptor pairs, so
+no interaction analysis is possible on it. Atera is whole-transcriptome, so the genes were
+measured all along — `atera_crop_lr.h5ad` carries 1,673 of them and supports **2,168** pairs.
+The two files describe identical cells in identical coordinates and can be joined on
+`obs['cell_id']`.
 
 ## What changed from the original
 

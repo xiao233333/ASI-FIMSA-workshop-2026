@@ -73,6 +73,7 @@ def read_panel_matrix(
     h5_path: Path | None = None,
     cache: Path | None = None,
     block: int = 20_000,
+    keep_cells: np.ndarray | None = None,
 ) -> tuple[np.ndarray, list[str], np.ndarray]:
     """Extract a dense (n_cells, n_panel) float32 counts matrix for `panel_genes`.
 
@@ -82,6 +83,13 @@ def read_panel_matrix(
 
     Returns ``(X, genes_found, barcodes)``. Column order follows `panel_genes`
     minus anything absent from the panel.
+
+    ``keep_cells`` is an optional boolean mask over the 170,057 cells. The stream
+    still walks every block -- the file is CSC, so there is no cheaper way to find
+    a cell's non-zeros -- but only the kept rows are materialised, and ``X`` and
+    ``barcodes`` come back restricted to them, in file order. This exists because
+    06_build_cci_table.py asks for 1,675 genes: dense over all cells that is 1.1 GB,
+    against 107 MB over the 16,006 Crop cells. Leave it None and nothing changes.
     """
     panel_genes = list(panel_genes or C.PANEL_GENES)
     h5_path = Path(h5_path or C.FEATURE_MATRIX_H5)
@@ -113,7 +121,24 @@ def read_panel_matrix(
         for col, g in enumerate(genes):
             lut[name_to_row[g]] = col
 
-        X = np.zeros((n_cells, len(genes)), dtype=np.float32)
+        # Global cell index -> output row, or -1 for a cell that is not kept.
+        # With keep_cells=None this is the identity and costs one int32 array.
+        if keep_cells is None:
+            row_out = np.arange(n_cells, dtype=np.int64)
+            n_out = n_cells
+        else:
+            keep_cells = np.asarray(keep_cells, dtype=bool)
+            if keep_cells.shape != (n_cells,):
+                raise ValueError(
+                    f"keep_cells must be a boolean mask over {n_cells} cells, "
+                    f"got shape {keep_cells.shape}"
+                )
+            row_out = np.full(n_cells, -1, dtype=np.int64)
+            n_out = int(keep_cells.sum())
+            row_out[keep_cells] = np.arange(n_out, dtype=np.int64)
+            barcodes = barcodes[keep_cells]
+
+        X = np.zeros((n_out, len(genes)), dtype=np.float32)
         d_data = f["matrix/data"]
         d_idx = f["matrix/indices"]
 
@@ -135,7 +160,15 @@ def read_panel_matrix(
             pos = np.flatnonzero(keep) + lo
             row = np.searchsorted(indptr, pos, side="right") - 1
             assert a <= row.min() and row.max() < b, "row index escaped its block"
-            np.add.at(X, (row, col), dat.astype(np.float32))
+            # Drop non-zeros belonging to cells we are not keeping, then map the
+            # survivors onto their output rows.
+            out = row_out[row]
+            if keep_cells is not None:
+                sel = out >= 0
+                if not sel.any():
+                    continue
+                out, col, dat = out[sel], col[sel], dat[sel]
+            np.add.at(X, (out, col), dat.astype(np.float32))
 
     print(
         f"  panel matrix {X.shape} in {time.time() - t0:.1f}s "

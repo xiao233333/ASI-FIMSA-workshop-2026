@@ -96,10 +96,19 @@ FIG_DIR = WORK_DIR / "figures"
 WHOLESLIDE_H5AD = OUT_DIR / "atera_wholeslide_cells.h5ad"
 CROP_ZARR_ZIP = OUT_DIR / "atera_crop.zarr.zip"
 
+#: The Crop's cells again, but carrying the ligand-receptor panel instead of the
+#: 69-gene teaching panel. Built by 06_build_cci_table.py; see the CCI section.
+CCI_LR_H5AD = OUT_DIR / "atera_crop_lr.h5ad"
+
 #: Committed human-gate files (small, text, tracked in git).
 CLUSTER_ANNOTATION_CSV = PREP_DIR / "atera_cluster_annotation.csv"
 CROP_WINDOW_JSON = PREP_DIR / "crop_window.json"
 MANIFEST_JSON = PREP_DIR / "manifest.json"
+
+#: Third committed gate file: the resolved ligand-receptor gene panel, written by
+#: 06_build_cci_table.py. Only the gene list is committed, never the connectomeDB
+#: pair tables themselves -- see the CCI section for why.
+CCI_PANEL_GENES_TXT = PREP_DIR / "cci_panel_genes.txt"
 
 #: Reviewer-facing PDFs / PNGs. Written next to the committed gate files so a
 #: reviewer finds them without digging through $TMPDIR.
@@ -254,6 +263,51 @@ PANEL_GENES: list[str] = _ordered_unique(
 )
 
 # --------------------------------------------------------------------------- #
+# Ligand-receptor panel (06_build_cci_table.py)
+# --------------------------------------------------------------------------- #
+
+#: connectomeDB2020, as shipped inside the stlearn wheel. Fetched from GitHub at
+#: build time rather than vendored: the Workshop repo is MIT and redistributing a
+#: third-party curated database under it is not ours to do. Only the resolved gene
+#: list -- a list of HGNC symbols, which is a fact and not the database -- is
+#: committed, as CCI_PANEL_GENES_TXT.
+CONNECTOMEDB_BASE = (
+    "https://raw.githubusercontent.com/BiomedicalMachineLearning/stLearn/"
+    "master/stlearn/tl/cci/databases"
+)
+CONNECTOMEDB_FILES = {
+    "connectomeDB2020_lit": f"{CONNECTOMEDB_BASE}/connectomeDB2020_lit.txt",
+    "connectomeDB2020_put": f"{CONNECTOMEDB_BASE}/connectomeDB2020_put.txt",
+}
+
+#: WHY A SECOND, WIDER PANEL EXISTS AT ALL.
+#: PANEL_GENES above is 69 genes chosen to name cell types. Intersected with
+#: connectomeDB2020 it yields exactly FOUR complete literature ligand-receptor
+#: pairs (CXCL12-CD4, EPCAM-EPCAM, MRC1-PTPRC, PTPRC-MRC1), which is not an
+#: analysis. The Atera run is whole-transcriptome, so the genes are there; they
+#: were simply not carried into the Crop. 06 carries them into their own artifact
+#: rather than widening the Crop, so the published atera_crop.zarr.zip -- and the
+#: two Tutorials that read it -- are untouched.
+#:
+#: Measured on the 16,006 Crop cells: 1,675 of connectomeDB's genes are present in
+#: the 18,028 Atera targets, giving 2,162 literature pairs whose ligand AND
+#: receptor are each detected in at least 20 cells.
+CCI_USE_DATABASES = ["connectomeDB2020_lit", "connectomeDB2020_put"]
+
+#: A gene must be detected in at least this many Crop cells to enter the panel.
+#: Whole-transcriptome Xenium carries a long tail of near-dropout targets, and a
+#: ligand nobody expresses only inflates the multiple-testing burden. Deliberately
+#: loose -- stlearn's own `min_spots` does the real filtering at analysis time, and
+#: the point of the artifact is to leave that knob in a Participant's hands.
+CCI_MIN_CELLS_DETECTED = 10
+
+#: Counts are stored sparse (CSR). Over these genes the Crop is ~6.7% dense, so
+#: sparse is ~14 MB against ~107 MB dense, and both scanpy and stlearn read it.
+#: The Tutorial densifies after subsetting, because stlearn's get_spot_lrs calls
+#: adata.to_df().
+CCI_STORE_SPARSE = True
+
+# --------------------------------------------------------------------------- #
 # Crop selection (02_pick_crop.py)
 # --------------------------------------------------------------------------- #
 
@@ -338,6 +392,7 @@ def gdrive_folder_url() -> str:
 STAGED_ARTIFACTS = [
     WHOLESLIDE_H5AD,
     CROP_ZARR_ZIP,
+    CCI_LR_H5AD,
 ]
 
 # --------------------------------------------------------------------------- #

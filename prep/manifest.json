@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workshop": "ASI-FIMSA 2026",
-  "generated_at": "2026-08-25T04:20:02+00:00",
+  "generated_at": "2026-08-25T07:10:20+00:00",
   "generated_by": "prep/05_make_manifest.py",
   "uploaded": true,
   "licence": {
@@ -62,6 +62,32 @@
       ],
       "built_by": "prep/",
       "local_path": "/scratch/project_mnt/S0010/Xiao/asi_fimsa_workshop/staged/atera_crop.zarr.zip"
+    },
+    {
+      "name": "atera_crop_lr.h5ad",
+      "bytes": 5369066,
+      "megabytes": 5.37,
+      "sha256": "5a7b3b3b7f4be97dfbfa41b4062b61f77b7bd236e89a291b401f8fbd98ecdf38",
+      "description": "",
+      "origins": [
+        {
+          "kind": "huggingface",
+          "role": "primary",
+          "repo_id": "xiao233333/asi-fimsa-workshop-2026",
+          "revision": "main",
+          "url": "https://huggingface.co/datasets/xiao233333/asi-fimsa-workshop-2026/resolve/main/atera_crop_lr.h5ad"
+        },
+        {
+          "kind": "gdrive",
+          "role": "mirror",
+          "folder_id": "1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
+          "folder_url": "https://drive.google.com/drive/folders/1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
+          "file_id": "1NF2cPWoyyk79Jzy5DqB5XFge2jUGCN6E",
+          "url": "https://drive.google.com/uc?id=1NF2cPWoyyk79Jzy5DqB5XFge2jUGCN6E"
+        }
+      ],
+      "built_by": "prep/",
+      "local_path": "/scratch/project_mnt/S0010/Xiao/asi_fimsa_workshop/staged/atera_crop_lr.h5ad"
     }
   ],
   "human_gates": {
@@ -78,6 +104,5 @@
     "Origin URLs are the intended locations; they 404 until the upload runs.",
     "Coordinates in every artifact are the ALIGNED (H&E) frame, micrometres.",
     "H&E pixel size 0.27377667386671845 um/px is pinned, not read from a TIFF tag."
-  ],
-  "gdrive_mirror": "live - both artifacts mirrored, unauthenticated gdown verified 2026-08-25"
+  ]
 }

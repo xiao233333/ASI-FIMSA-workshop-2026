@@ -44,6 +44,14 @@ cd "$REPO"
   --index-strategy unsafe-best-match \
   -c constraints-colab.txt -r verify/requirements-verify.txt
 
+# stlearn, alone, with --no-deps. It declares numpy>=2.4.0, which collides with
+# the numpy==2.0.2 Colab hold; every third party it eagerly imports is already
+# installed by the two commands above (bokeh and leidenalg included). See ADR-0004
+# and the header of requirements-colab-stlearn.txt. This mirrors exactly what
+# 02b_cell_cell_interaction does in a Participant's Colab session.
+"$UV" pip install --python "$VENV/bin/python" \
+  --no-deps -r requirements-colab-stlearn.txt
+
 # nbconvert resolves --ExecutePreprocessor.kernel_name=python3 through the
 # kernelspec search path. Registering into the venv's own share/jupyter keeps it
 # self-contained; run_notebooks.sh then points JUPYTER_PATH at it so a stale
@@ -60,10 +68,19 @@ from importlib.metadata import version
 print("python", sys.version.split()[0])
 for p in ["numpy","torch","scanpy","squidpy","spatialdata","spatialdata-io",
           "spatialdata-plot","sopa","netgraph","anndata","zarr","dask",
-          "imagecodecs","tifffile","huggingface-hub","gdown"]:
+          "imagecodecs","tifffile","huggingface-hub","gdown",
+          "stlearn","bokeh","leidenalg"]:
     print(f"  {p:20s} {version(p)}")
 assert version("numpy") == "2.0.2", "numpy drifted off the Colab pin"
 print("\nnumpy holds at 2.0.2")
+
+# The --no-deps bet, checked at build time rather than discovered in the room:
+# importing stlearn is what pulls its eager third-party imports, and it is the
+# first thing that breaks if a leaf is missing or numpy 2.0.2 is genuinely too old.
+import stlearn
+print(f"stlearn {stlearn.__version__} imports under numpy {version('numpy')}")
+lrs = stlearn.tl.cci.load_lrs(["connectomeDB2020_lit"], species="human")
+print(f"connectomeDB2020_lit loads: {len(lrs):,} ligand-receptor pairs")
 PY
 echo
 echo "Done. Verify notebooks with:  bash verify/run_notebooks.sh"

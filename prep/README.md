@@ -9,12 +9,13 @@ these scripts produce, never the scripts themselves.
 
 ---
 
-## The two artifacts
+## The three artifacts
 
 | Artifact | Size | What it is |
 |---|---|---|
 | `atera_wholeslide_cells.h5ad` | 19.9 MB | All 170,057 cells: aligned centroids, vendor graphclust / kmeans / UMAP / PCA, merged cell types, and a 69-gene marker panel as dense float32 `X`. No images. |
 | `atera_crop.zarr.zip` | 18.0 MB | A `SpatialData` Crop: 2000 µm window with an H&E overview, a native-resolution `he_zoom`, per-cell boundary polygons and the annotated table, all in one micrometre coordinate system. |
+| `atera_crop_lr.h5ad` | 5.4 MB | The SAME 16,006 Crop cells with a different panel: 1,673 connectomeDB2020 ligands and receptors that Atera measures, as raw sparse counts. Built for Tutorial 02b, whose ligand-receptor test the 69-gene panel cannot support — it yields 4 complete literature pairs against 2,168 here. |
 
 They are written to `$PREP_OUT`
 (default `/scratch/project_mnt/S0010/Xiao/asi_fimsa_workshop/staged`), not into the repo —
@@ -42,8 +43,9 @@ it on every build and prints the answer.
 | 02 | `02_pick_crop.py` | ~5 s | **`crop_window.json`** + `crop_candidates.png` — **human gate 2** |
 | 03 | `03_build_wholeslide.py` | ~30 s | `atera_wholeslide_cells.h5ad` |
 | 04 | `04_build_crop.py` | ~15 s | `atera_crop.zarr.zip` + `crop_he_celltypes.png` |
+| 06 | `06_build_cci_table.py` | ~30 s | `atera_crop_lr.h5ad` + **`cci_panel_genes.txt`** + `cci_panel_qc.png` |
 | 05 | `05_make_manifest.py` | ~1 s | `manifest.json` |
-| — | `upload_to_origins.sh` | — | **BLOCKED on the Atera licence — do not run** |
+| — | `upload_to_origins.sh` | ~2 min | Publishes to Hugging Face + the Drive mirror. Licence cleared 2026-08-25, but still gated behind `ACK_ATERA_LICENCE=yes` so the upload stays a deliberate act. |
 
 Steps 03 and 04 both need the 307M-non-zero count matrix; 03 caches the extracted
 panel to `$PREP_WORK/panel_matrix.npz` and 04 reuses it, so run them in order.
@@ -60,6 +62,13 @@ Total under 3 minutes of compute; the job asks for 2 h because staging 470 MB of
 RDM is the variable part.
 
 ---
+
+> **06 runs before 05, and after 04.** It reads the built `atera_crop.zarr.zip` to take its
+> cell list, rather than re-deriving the window, because 04 also drops cells with no usable
+> boundary polygon — re-deriving would silently give a slightly different cell set. 05 writes
+> the manifest and must therefore see every artifact that exists. `cci_panel_genes.txt` is a
+> generated record, not a gate: nobody signs it off, but it is committed so a reviewer can see
+> which genes the ligand-receptor Tutorial had available.
 
 ## The two human gates
 
@@ -171,12 +180,19 @@ disallowed. Mixed labels use `+` (`config.MIXED_SEP`).
 
 ## Publishing
 
-`upload_to_origins.sh` pushes both artifacts to Hugging Face
+`upload_to_origins.sh` pushes all three artifacts to Hugging Face
 (`xiao233333/asi-fimsa-workshop-2026`, primary) and mirrors them to the Google Drive
 folder `1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm`, then writes the resulting Drive file ids
-back into `manifest.json`.
+back into `manifest.json`. It also ships the gate files and the dataset card, so the
+provenance travels with the data.
 
-It **refuses to run** unless `ACK_ATERA_LICENCE=yes` is set, because the Atera
-bundle is a 10x pre-release dataset whose redistribution licence has not been
-verified. Settle that question, record it as an ADR, and only then lift the gate.
-Until then the artifacts stay on Bunya and `manifest.json` says `"uploaded": false`.
+It **refuses to run** unless `ACK_ATERA_LICENCE=yes` is set. The Atera bundle is a 10x
+pre-release dataset; its redistribution licence was confirmed as **CC BY 4.0** on
+2026-08-25 and is recorded in `DATA_LICENCE.md`, `prep/hf_dataset_card.md` and the
+`licence` block of `manifest.json`. The gate stays anyway, because publishing cannot be
+undone and every upload should be something someone chose to do. Two invocation notes,
+both learned the hard way: the remote is `RCLONE_REMOTE=googledrive` (the script's
+default is `gdrive`), and `hf` lives in the verification venv rather than on `$PATH`.
+
+Run it after `05_make_manifest.py`, never before — the preflight verifies every
+artifact's sha256 against the manifest and aborts on a mismatch.

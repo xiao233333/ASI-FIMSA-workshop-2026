@@ -14,7 +14,11 @@
 # Build every Atera Staged dataset from the RDM bundle, end to end.
 #
 #   sbatch prep/jobs/run_all.slurm            # everything, both gates re-derived
-#   sbatch prep/jobs/run_all.slurm 03 04 05   # rebuild only these steps
+#   sbatch prep/jobs/run_all.slurm 03 04 06   # rebuild only these steps
+#
+# Step order note: 06 runs BEFORE 05. 06 builds atera_crop_lr.h5ad (and reads
+# the Crop that 04 wrote), and 05 writes the manifest, which must see every
+# artifact that exists.
 #
 # Submit from /scratch, never from /QRISdata. Nothing here uploads anything --
 # see prep/upload_to_origins.sh for that, and read its licence gate first.
@@ -45,7 +49,7 @@ mkdir -p "$PREP_WORK" "$PREP_OUT"
 
 STEPS=("$@")
 if [[ ${#STEPS[@]} -eq 0 ]]; then
-  STEPS=(00 01 02 03 04 05)
+  STEPS=(00 01 02 03 04 06 05)
 fi
 
 echo "node       : $(hostname)"

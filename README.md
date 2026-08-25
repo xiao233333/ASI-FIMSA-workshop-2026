@@ -7,7 +7,7 @@ tissue, breast cancer, through three different technologies**, so that every dif
 you see on screen comes from the technology rather than from the sample. You will read
 and plot the data yourself, find the tissue niches that make up a tumour
 microenvironment, and finish by training a small Vision Transformer that predicts gene
-expression straight from an H&E image. Three Tutorials, each self-contained, each a
+expression straight from an H&E image. Four Tutorials, each self-contained, each a
 single notebook you open with one click.
 
 ## The Tutorials
@@ -20,6 +20,7 @@ Click a badge to open that Tutorial in Google Colab. Start with the setup check
 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/00_setup_check.ipynb) | **00 · Setup check** | Confirms Colab can install the packages and reach the data. Run it at home, not in the room. | ~10 min |
 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/01_read_and_visualise.ipynb) | **01 · Read and visualise** | Load and plot all three platforms — Visium spots, Xenium cells, and the whole-transcriptome Atera run — and see what each one can and cannot resolve. | ~35 min |
 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/02_niche_analysis.ipynb) | **02 · Niche analysis** | Find tissue niches in the tumour microenvironment — immune infiltration, tumour boundary, stroma — from which cells sit next to which. | ~35 min |
+| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/02b_cell_cell_interaction.ipynb) | **02b · Cell–cell interaction** | Run stLearn's spatially-constrained ligand–receptor test on the same cells — and watch a gene panel decide, before you start, which questions you are allowed to ask. | ~30 min |
 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/03_vit_gene_expression.ipynb) | **03 · ViT for gene expression** | Train a small Vision Transformer that predicts gene expression from H&E morphology alone, then look honestly at which genes it gets right and which it does not. | ~40 min |
 
 More material is written here than fits a two-hour slot; on the day we work through as
@@ -43,6 +44,11 @@ A **GPU is optional.** Every Tutorial is written to run on Colab's ordinary free
 runtime. Tutorial 03 will use a GPU if Colab happens to give you one, and simply takes a
 little longer if not. There is no need to hunt for one, and no need to pay for anything.
 
+**On the day, Tutorial 03 downloads a further ~1.8 GB** — the full-resolution H&E image
+for the Visium sample, which is what its Vision Transformer actually learns from. This
+does *not* touch the wifi in the room: Colab pulls it over Google's network from 10x's
+CDN, and it usually takes well under a minute. Nothing to do in advance.
+
 If the setup check fails, please open an issue on this repository, or bring the error
 message with you and we will sort it out at the start of the session.
 
@@ -57,7 +63,7 @@ between two tumours. The Tutorials say so where it matters.
 
 | Platform | Sample | Resolution | Plex | Where it comes from |
 |---|---|---|---|---|
-| **Visium** | `V1_Breast_Cancer_Block_A_Section_1` | 55 µm spots (tens of cells each) | Whole transcriptome | Downloaded live from 10x Genomics' public CDN |
+| **Visium** | `V1_Breast_Cancer_Block_A_Section_1` | 55 µm spots (tens of cells each) | Whole transcriptome | Downloaded live from 10x Genomics' public CDN, including the 1.8 GB full-resolution H&E for Tutorial 03 |
 | **Xenium** | `Xenium_FFPE_Human_Breast_Cancer_Rep1` | Single cell | 313 genes (pre-designed breast panel) | Downloaded live from 10x Genomics' public CDN |
 | **Atera** | Whole-transcriptome Xenium preview (`chemistry_version: "Atera v1"`) | Single cell | 18,028 genes, 170,057 cells | Prepared Crop staged in the Hugging Face dataset repo [`xiao233333/asi-fimsa-workshop-2026`](https://huggingface.co/datasets/xiao233333/asi-fimsa-workshop-2026) |
 
@@ -91,10 +97,11 @@ Please cite that paper if you use the Xenium breast data in your own work.
 ### Repo layout
 
 ```
-notebooks/               The four Colab notebooks. Tracked in git; outputs are not.
+notebooks/               The five Colab notebooks. Tracked in git; outputs are not.
   00_setup_check.ipynb
   01_read_and_visualise.ipynb
   02_niche_analysis.ipynb
+  02b_cell_cell_interaction.ipynb
   03_vit_gene_expression.ipynb
 prep/                    Prep scripts: vendor output -> Staged dataset.
 verify/                  Headless notebook execution, for checking the Tutorials still run.

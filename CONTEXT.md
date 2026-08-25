@@ -12,7 +12,7 @@ and trimmed to the slot before delivery.
 _Avoid_: course, module
 
 **Tutorial**:
-One self-contained Colab notebook covering one topic end to end. There are three.
+One self-contained Colab notebook covering one topic end to end. There are four.
 _Avoid_: notebook (when referring to the teaching unit), practical, lab
 
 **Participant**:

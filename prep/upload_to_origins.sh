@@ -1,23 +1,25 @@
 #!/usr/bin/env bash
 # =============================================================================
-#  LICENCE GATE -- DO NOT RUN THIS SCRIPT YET.
+#  LICENCE GATE -- CLEARED 2026-08-25, AND STILL A DELIBERATE ACT.
 #
 #  The Atera bundle is a 10x PRE-RELEASE dataset ("Atera v1" chemistry, Gen2
-#  prototype instrument) and its REDISTRIBUTION LICENCE HAS NOT BEEN VERIFIED.
-#  Both origins below are public: a Hugging Face dataset repo and a Google Drive
-#  folder shared with Workshop Participants. Publishing derived data from an
-#  unlicensed pre-release bundle is exactly the thing that cannot be taken back.
+#  prototype instrument). Its redistribution licence was confirmed as CC BY 4.0
+#  on 2026-08-25; the terms, the required attribution and the source URL are
+#  recorded in DATA_LICENCE.md, in prep/hf_dataset_card.md, and in the `licence`
+#  block of prep/manifest.json. Both origins below are public: a Hugging Face
+#  dataset repo and a Google Drive folder shared with Workshop Participants.
 #
-#  Before running:
-#    1. Confirm in writing with 10x (or whoever supplied the bundle) that derived
-#       artifacts may be redistributed publicly, and on what terms.
-#    2. Record that confirmation in docs/adr/ as an ADR.
-#    3. Put the resulting licence text in LICENCE-DATA next to the artifacts and
-#       add the required attribution to the Hugging Face dataset card.
-#    4. Only then: bash prep/upload_to_origins.sh
+#  ACK_ATERA_LICENCE is deliberately still required. Publishing derived data is
+#  the thing that cannot be taken back, so every upload stays an explicit act
+#  rather than something a stray `bash prep/*.sh` can do. Before running, satisfy
+#  yourself that:
+#    1. The artifacts about to be uploaded are the ones you meant to build.
+#    2. DATA_LICENCE.md and the dataset card still describe them accurately --
+#       in particular, that any NEW artifact is covered by the same CC BY 4.0
+#       grant and carries its attribution.
+#    3. prep/manifest.json is current (run 05_make_manifest.py after any build).
 #
-#  Until then this script exists so the upload is a decision, not an afternoon of
-#  re-deriving how it was meant to work.
+#  Then:  ACK_ATERA_LICENCE=yes bash prep/upload_to_origins.sh
 # =============================================================================
 #
 # Uploads the Staged datasets to their two origins:
@@ -40,7 +42,7 @@ OUT_DIR="${PREP_OUT:-/scratch/project_mnt/S0010/Xiao/asi_fimsa_workshop/staged}"
 HF_REPO="xiao233333/asi-fimsa-workshop-2026"
 GDRIVE_FOLDER_ID="1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm"
 RCLONE_REMOTE="${RCLONE_REMOTE:-gdrive}"
-ARTIFACTS=(atera_wholeslide_cells.h5ad atera_crop.zarr.zip)
+ARTIFACTS=(atera_wholeslide_cells.h5ad atera_crop.zarr.zip atera_crop_lr.h5ad)
 
 DRY_RUN=0
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=1
@@ -50,9 +52,10 @@ if [[ "${ACK_ATERA_LICENCE:-}" != "yes" ]]; then
   cat >&2 <<'MSG'
 REFUSING TO UPLOAD.
 
-The Atera redistribution licence has not been verified. Read the header of this
-script. If and only if the licence question is settled and recorded in an ADR,
-re-run with:
+Uploading publishes derived Atera data to two public origins, which cannot be
+undone. The licence itself is settled (CC BY 4.0, see DATA_LICENCE.md); this
+gate is here so the upload is always an explicit decision. Read the header of
+this script, check that manifest.json is current, then re-run with:
 
     ACK_ATERA_LICENCE=yes bash prep/upload_to_origins.sh
 
@@ -100,6 +103,8 @@ done
 hf upload "$HF_REPO" "$HERE/manifest.json" manifest.json --repo-type dataset
 hf upload "$HF_REPO" "$HERE/atera_cluster_annotation.csv" \
   atera_cluster_annotation.csv --repo-type dataset
+hf upload "$HF_REPO" "$HERE/cci_panel_genes.txt" \
+  cci_panel_genes.txt --repo-type dataset
 hf upload "$HF_REPO" "$HERE/crop_window.json" crop_window.json --repo-type dataset
 hf upload "$HF_REPO" "$HERE/hf_dataset_card.md" README.md --repo-type dataset \
   --commit-message "Dataset card: CC BY 4.0 attribution, contents, caveats"

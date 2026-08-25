@@ -33,7 +33,16 @@ IMAGE_MIMES = ("image/png", "image/jpeg", "image/svg+xml")
 
 # A Participant runs 00_setup_check before the Workshop, on Colab, possibly on
 # hotel wifi. If it stops being a two-minute notebook it stops being run at all.
-DEFAULT_BUDGETS = {"00_setup_check": 120}
+DEFAULT_BUDGETS = {
+    "00_setup_check": 120,
+    # 02b is the only Tutorial with a default budget beyond the setup check,
+    # because its two stlearn cells are pure CPU work whose cost scales with the
+    # tested pair count and the permutation counts -- exactly the numbers someone
+    # will one day raise "just to see". The figure is deliberately loose: 02b runs
+    # in ~110 s on an idle box at 4 threads and 268 s on the same box under a load
+    # average of 500, so this catches a real regression and not a busy node.
+    "02b_cell_cell_interaction": 420,
+}
 
 
 def parse_ts(value):

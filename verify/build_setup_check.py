@@ -32,10 +32,12 @@ PIN_END = "# --- END PINS ---"
 
 # The union set, matching requirements-colab.txt. torch is absent on purpose:
 # Colab preinstalls 2.11.0 built for its own driver.
+# bokeh and leidenalg are here for stlearn, which is installed separately below
+# with --no-deps and therefore brings nothing of its own. See ADR-0004.
 PACKAGES = [
     "spatialdata", "spatialdata-io", "spatialdata-plot", "squidpy", "sopa",
     "scanpy", "netgraph", "huggingface_hub", "gdown", "tifffile",
-    "imagecodecs", "seaborn",
+    "imagecodecs", "seaborn", "bokeh", "leidenalg",
 ]
 
 
@@ -126,6 +128,16 @@ if IN_COLAB:
         rc = _run([sys.executable, "-m", "pip", "install", "-q",
                    "-c", str(constraints), *PACKAGES])
     INSTALL_OK = rc == 0
+
+    # stlearn, alone, with --no-deps. It declares numpy>=2.4.0, and Colab has
+    # already imported numpy 2.0.2 -- satisfying that floor would force a session
+    # restart. Everything stlearn actually imports is already installed above,
+    # plus torchvision, which Colab preinstalls. ADR-0004 has the full argument.
+    rc_stlearn = _run([sys.executable, "-m", "pip", "install", "-q",
+                       "--no-deps", "stlearn"])
+    if rc_stlearn != 0:
+        print("stlearn did not install -- Tutorial 02b will not run.")
+    INSTALL_OK = INSTALL_OK and rc_stlearn == 0
     importlib.invalidate_caches()
 else:
     print("Not running in Google Colab, so nothing was installed.")
@@ -227,7 +239,8 @@ CHECKS = [
     ("netgraph", "netgraph"), ("zarr", "zarr"), ("dask", "dask"),
     ("tifffile", "tifffile"), ("imagecodecs", "imagecodecs"),
     ("seaborn", "seaborn"), ("huggingface_hub", "huggingface_hub"),
-    ("gdown", "gdown"), ("torch", "torch"),
+    ("gdown", "gdown"), ("torch", "torch"), ("torchvision", "torchvision"),
+    ("bokeh", "bokeh"), ("leidenalg", "leidenalg"), ("stlearn", "stlearn"),
 ]
 
 print(f"Python {platform.python_version()}")

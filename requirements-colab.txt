@@ -17,6 +17,11 @@
 # imagecodecs <2026, scikit-image). This file names only what we ask for.
 # The `-c` line below is what binds the two together; without it, pip is free
 # to pick a different resolution and the tested set means nothing.
+#
+# One package is NOT here and cannot be: stlearn, which Tutorial 02b installs with
+# `--no-deps` because its declared `numpy>=2.4.0` collides with the Colab numpy
+# hold. A `-r` install has no way to express --no-deps, so stlearn lives in its own
+# one-line file, requirements-colab-stlearn.txt. See ADR-0004.
 -c constraints-colab.txt
 
 # --- torch is deliberately ABSENT -------------------------------------------
@@ -47,6 +52,14 @@ scanpy
 # alone leaves that function raising ImportError, so it is requested here and
 # in the 02_niche_analysis install line.
 netgraph
+
+# --- Tutorial 02b needs stlearn's two eager imports -------------------------
+# stlearn is installed with --no-deps (see the header), so nothing comes with it.
+# stlearn/pl/__init__.py imports the bokeh-backed *_interactive plots and
+# stlearn/tl/clustering/leiden.py imports leidenalg, both unconditionally, so
+# `import stlearn` fails without these two.
+bokeh
+leidenalg
 
 # --- fetching Staged datasets ------------------------------------------------
 huggingface_hub
