@@ -191,3 +191,6 @@ The three Tutorials:
   `prep/manifest.json`. Hugging Face remains the primary origin. Note the rclone remote had
   `service_account_file` pointing at an OAuth client-secret JSON (`{"installed": ...}`)
   rather than a service-account key, which blocked the OAuth path until removed.
+- 2026-08-25: Repo published at https://github.com/xiao233333/ASI-FIMSA-workshop-2026
+  (public, default branch `main`). All four Colab badge targets resolve, as does
+  `notebooks/voronoi.py`, which the Tutorials fetch at run time.
