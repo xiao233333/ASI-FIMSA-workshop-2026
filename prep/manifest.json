@@ -30,8 +30,8 @@
           "role": "mirror",
           "folder_id": "1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
           "folder_url": "https://drive.google.com/drive/folders/1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
-          "file_id": null,
-          "url": null
+          "file_id": "1gYl_2phYXKRfD_rLcx6EoPteiZb8jHVe",
+          "url": "https://drive.google.com/uc?id=1gYl_2phYXKRfD_rLcx6EoPteiZb8jHVe"
         }
       ],
       "built_by": "prep/",
@@ -56,8 +56,8 @@
           "role": "mirror",
           "folder_id": "1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
           "folder_url": "https://drive.google.com/drive/folders/1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
-          "file_id": null,
-          "url": null
+          "file_id": "1cwe4fBzSbBJNLLABd12lHmYrfKOSa18y",
+          "url": "https://drive.google.com/uc?id=1cwe4fBzSbBJNLLABd12lHmYrfKOSa18y"
         }
       ],
       "built_by": "prep/",
@@ -79,5 +79,5 @@
     "Coordinates in every artifact are the ALIGNED (H&E) frame, micrometres.",
     "H&E pixel size 0.27377667386671845 um/px is pinned, not read from a TIFF tag."
   ],
-  "gdrive_mirror": "pending - needs an interactively configured rclone remote"
+  "gdrive_mirror": "live - both artifacts mirrored, unauthenticated gdown verified 2026-08-25"
 }

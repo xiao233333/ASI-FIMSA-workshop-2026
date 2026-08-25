@@ -115,9 +115,9 @@ The three Tutorials:
   parent course (`voronoi.py`, and a coordinate assertion in the ViT Tutorial) and only
   surfaced on execution. Grep new code for `.ptp()`, `.newbyteorder()`, `np.float_`,
   `np.NaN`, `np.in1d` before trusting it.
-- The Google Drive mirror is not populated. `rclone` needs an interactively configured
-  remote; `prep/upload_to_origins.sh` skips the mirror cleanly when none exists. Hugging Face
-  is the primary origin and the Tutorials work without the mirror.
+- `gdown` 6.x **removed the `--fuzzy` flag** (it is the default now). Any snippet copied from
+  older tutorials that passes `--fuzzy` will fail with "unrecognized arguments". No notebook
+  here uses it.
 
 # Change Log
 
@@ -185,3 +185,9 @@ The three Tutorials:
   the edges (the raw graph is complete — 21 nodes, 210 edges — and unreadable). This only
   surfaced after netgraph was added to Tutorial 2's install line, because the cell had been
   written for the netgraph-absent path and its real branch had never executed.
+- 2026-08-25: Google Drive mirror populated and verified. Both artifacts download
+  **unauthenticated** via `gdown` with matching sha256, so link-sharing is inherited from the
+  folder and a Participant's Colab session can reach them; per-file ids are recorded in
+  `prep/manifest.json`. Hugging Face remains the primary origin. Note the rclone remote had
+  `service_account_file` pointing at an OAuth client-secret JSON (`{"installed": ...}`)
+  rather than a service-account key, which blocked the OAuth path until removed.
