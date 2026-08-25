@@ -48,11 +48,16 @@ message with you and we will sort it out at the start of the session.
 
 ## The datasets
 
-One tissue — human breast cancer — measured three ways.
+One disease — human breast carcinoma — measured three ways.
+
+These are **three different FFPE specimens**, not serial sections of one block. They
+are matched by disease and preservation, which is enough to make the technologies
+comparable, but a difference you see between two panels can still be a difference
+between two tumours. The Tutorials say so where it matters.
 
 | Platform | Sample | Resolution | Plex | Where it comes from |
 |---|---|---|---|---|
-| **Visium** | `V1_Breast_Cancer_Block_A_Section_1` | 55 µm spots (tens of cells each) | Whole transcriptome | Downloaded live from 10x Genomics' public CDN by `scanpy`'s `visium_sge()` |
+| **Visium** | `V1_Breast_Cancer_Block_A_Section_1` | 55 µm spots (tens of cells each) | Whole transcriptome | Downloaded live from 10x Genomics' public CDN |
 | **Xenium** | `Xenium_FFPE_Human_Breast_Cancer_Rep1` | Single cell | 313 genes (pre-designed breast panel) | Downloaded live from 10x Genomics' public CDN |
 | **Atera** | Whole-transcriptome Xenium preview (`chemistry_version: "Atera v1"`) | Single cell | 18,028 genes, 170,057 cells | Prepared Crop staged in the Hugging Face dataset repo [`xiao233333/asi-fimsa-workshop-2026`](https://huggingface.co/datasets/xiao233333/asi-fimsa-workshop-2026) |
 
@@ -126,7 +131,7 @@ PROJECT_CONTEXT.md       Durable project memory: goals, paths, stack, change log
 ## Credits and licence
 
 This Workshop is derived from the **`gml-teaching-2026`** course material of the
-**Genomics and Machine Learning Lab, University of Queensland**. Tutorial 02's
+**Genomics and Machine Learning Lab, QIMR Berghofer Medical Research Institute | The University of Queensland**. Tutorial 02's
 neighbourhood analysis and Tutorial 03's Vision Transformer both began as notebooks from
 that course; they were rewritten for Colab and for public data rather than forked, and
 each notebook names its parent in its header. Our thanks to the lab for the original
@@ -134,7 +139,12 @@ material.
 
 Datasets are courtesy of 10x Genomics — see **Attribution** above.
 
-> **Licence: to be decided.** No licence has been chosen for the code and teaching
-> material in this repository yet, which means default copyright applies and reuse
-> rights are not yet granted. A licence will be added before the Workshop. The
-> licensing of the Atera dataset is being confirmed separately.
+**Data licences** are settled and recorded in [`DATA_LICENCE.md`](DATA_LICENCE.md). The
+Atera dataset is **CC BY 4.0**, so the derived Staged datasets we host are redistributed
+under the same terms with attribution to 10x Genomics. The Visium and Xenium data are
+downloaded from 10x directly and are not redistributed here.
+
+**Code and teaching material** are [MIT licensed](LICENSE) — reuse, adapt and teach from
+them freely. One carve-out: `voronoi_finite_polygons_2d()` in `notebooks/voronoi.py` is
+adapted from a 2013 Stack Overflow answer and is CC BY-SA 3.0 rather than MIT, as recorded
+in the LICENSE file's Exceptions section.

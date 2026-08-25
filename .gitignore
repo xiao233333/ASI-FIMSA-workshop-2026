@@ -34,3 +34,7 @@ runs/*.err
 # --- OS / editor -------------------------------------------------------------
 .DS_Store
 Thumbs.db
+
+# stray downloads from running notebooks in place (harness now uses a scratch workdir)
+notebooks/visium/
+notebooks/data/

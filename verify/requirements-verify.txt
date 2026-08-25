@@ -1,0 +1,23 @@
+# Extras for the LOCAL verification environment only -- never installed in Colab.
+#
+#   uv pip install -c ../constraints-colab.txt -r requirements-verify.txt
+#
+# Colab supplies all of this itself: a running kernel, and a torch built for its
+# own GPU. Locally we have to bring our own, so this file adds:
+#   * jupyter + nbconvert + ipykernel, to execute notebooks headlessly
+#   * torch, pinned to the version Colab ships so a version-dependent break in
+#     Tutorial 3 surfaces here rather than in the room
+#
+# torch is pinned to the +cpu build. Bunya's general partition has no GPU, and
+# Tutorial 3 selects its device with
+#     device = "cuda" if torch.cuda.is_available() else "cpu"
+# so the CPU wheel exercises exactly the path a GPU-less Colab session takes,
+# at a tenth of the download. Install it with:
+#   --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
+torch==2.11.0
+
+jupyter==1.1.1
+nbconvert==7.17.1
+nbformat==5.11.1
+ipykernel==7.3.0
+matplotlib-inline==0.2.2

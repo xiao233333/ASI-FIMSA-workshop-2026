@@ -1,0 +1,59 @@
+# Data sources and licences
+
+The Workshop uses three public 10x Genomics datasets. Two are downloaded directly from
+10x's CDN at run time; the third is redistributed here in derived form, which the licence
+below permits with attribution.
+
+## Atera — whole-transcriptome Xenium, FFPE human breast cancer
+
+**Source:** 10x Genomics, *Preview Data: Atera In Situ Gene Expression, FFPE Human Breast
+Cancer* — https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-breast-cancer
+**Licence:** Creative Commons Attribution 4.0 International (CC BY 4.0) —
+https://creativecommons.org/licenses/by/4.0/
+**Attribution:** Data © 10x Genomics, used under CC BY 4.0.
+
+This dataset is **pre-release**: 18,028-target "Human WTA (pre-release)" panel,
+`chemistry_version: "Atera v1"`, on a Gen2 prototype instrument. 10x notes that preview
+data was generated with development versions of the panel, user guides and analysis
+software and may be replaced by data from the final workflow.
+
+**What we redistribute is derived, not the original bundle.** From the ~65 GB original we
+publish two small artifacts (~38 MB total) at
+`https://huggingface.co/datasets/xiao233333/asi-fimsa-workshop-2026`:
+
+- `atera_wholeslide_cells.h5ad` — all 170,057 cells: aligned centroids, the vendor's own
+  graph-based and k-means clusterings, UMAP and PCA, our merged cell-type labels, and a
+  69-gene marker counts matrix. No images.
+- `atera_crop.zarr.zip` — a 2,000 µm square containing 16,006 cells, with an H&E overview,
+  a native-resolution zoom, per-cell boundary polygons and the annotated table.
+
+Changes made to the original: spatial subsetting to one window; restriction of the
+expression matrix to a 69-gene marker panel; image downsampling; and the addition of
+cell-type labels derived by us (see below). The full derivation is reproducible from the
+scripts in `prep/`.
+
+**Cell-type labels are ours, not 10x's.** They were derived automatically from the
+vendor's shipped per-cluster differential expression, merging 34 graph-based clusters into
+12 named populations, then reviewed by a human. 14 of the 34 clusters are flagged
+`low_confidence` in `prep/atera_cluster_annotation.csv`, and three are deliberately left
+`Unassigned` or `Mixed`. Treat them as teaching material, not as a reference annotation.
+
+## Xenium — FFPE human breast cancer, 313-gene panel
+
+**Source:** 10x Genomics, `Xenium_FFPE_Human_Breast_Cancer_Rep1` —
+https://www.10xgenomics.com/datasets/xenium-ffpe-human-breast-with-custom-add-on-panel-1-standard
+**Attribution:** Data © 10x Genomics. Please also cite the accompanying publication:
+
+> Janesick A, Shelansky R, Gottscho AD, *et al.* High resolution mapping of the tumor
+> microenvironment using integrated single-cell, spatial and in situ analysis.
+> *Nature Communications* **14**, 8353 (2023). https://doi.org/10.1038/s41467-023-43458-x
+
+Downloaded live from 10x's CDN by the Tutorials. Not redistributed here.
+
+## Visium — human breast cancer, Block A Section 1
+
+**Source:** 10x Genomics, `V1_Breast_Cancer_Block_A_Section_1` —
+https://www.10xgenomics.com/datasets/human-breast-cancer-block-a-section-1-1-standard-1-0-0
+**Attribution:** Data © 10x Genomics.
+
+Downloaded live from 10x's CDN by the Tutorials. Not redistributed here.

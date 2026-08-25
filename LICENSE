@@ -1,0 +1,43 @@
+MIT License
+
+Copyright (c) 2026 Genomics and Machine Learning Lab, QIMR Berghofer Medical Research Institute | The University of Queensland
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Exceptions
+
+The MIT licence above covers the code and teaching material in this repository,
+with the following exceptions.
+
+### notebooks/voronoi.py -- voronoi_finite_polygons_2d()
+
+That single function is adapted from a Stack Overflow answer posted in 2013
+(https://stackoverflow.com/a/20678647) and is therefore available under
+**CC BY-SA 3.0** (https://creativecommons.org/licenses/by-sa/3.0/), not MIT.
+Attribution is retained in the function's docstring. If you reuse that function,
+CC BY-SA 3.0's share-alike condition applies to it; the rest of the file and the
+rest of this repository remain MIT.
+
+### Datasets
+
+No dataset in this repository is covered by this licence. The Atera data is
+CC BY 4.0 (c) 10x Genomics; the Visium and Xenium data are downloaded from 10x
+at run time and are not redistributed here. See DATA_LICENCE.md.

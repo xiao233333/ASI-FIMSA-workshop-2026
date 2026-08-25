@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "workshop": "ASI-FIMSA 2026",
+  "generated_at": "2026-08-25T04:20:02+00:00",
+  "generated_by": "prep/05_make_manifest.py",
+  "uploaded": true,
+  "licence": {
+    "atera_source": "CC BY 4.0",
+    "verified_on": "2026-08-25",
+    "attribution": "Data (c) 10x Genomics, used under CC BY 4.0. Derived: spatially subset, marker-panel restricted, image downsampled, cell types added.",
+    "source_url": "https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-breast-cancer"
+  },
+  "artifacts": [
+    {
+      "name": "atera_wholeslide_cells.h5ad",
+      "bytes": 19912316,
+      "megabytes": 19.91,
+      "sha256": "cec2b3a555f78d32d201ac4c8c6d15478d85e4779fd5852faa0252021c875660",
+      "description": "All 170,057 Atera cells: aligned centroids, vendor graphclust / kmeans / UMAP / PCA, merged cell types, and a marker-panel counts matrix. No images.",
+      "origins": [
+        {
+          "kind": "huggingface",
+          "role": "primary",
+          "repo_id": "xiao233333/asi-fimsa-workshop-2026",
+          "revision": "main",
+          "url": "https://huggingface.co/datasets/xiao233333/asi-fimsa-workshop-2026/resolve/main/atera_wholeslide_cells.h5ad"
+        },
+        {
+          "kind": "gdrive",
+          "role": "mirror",
+          "folder_id": "1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
+          "folder_url": "https://drive.google.com/drive/folders/1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
+          "file_id": null,
+          "url": null
+        }
+      ],
+      "built_by": "prep/",
+      "local_path": "/scratch/project_mnt/S0010/Xiao/asi_fimsa_workshop/staged/atera_wholeslide_cells.h5ad"
+    },
+    {
+      "name": "atera_crop.zarr.zip",
+      "bytes": 17991106,
+      "megabytes": 17.99,
+      "sha256": "f46111af1429857bfdfc8d7c6eb5dc7679d2d8684a19391503f56ca45d80bc5a",
+      "description": "SpatialData Crop: a 2000 um window with an H&E overview, a native-resolution he_zoom, per-cell boundary polygons and the annotated table, all in one micrometre coordinate system. Unzip before spatialdata.read_zarr().",
+      "origins": [
+        {
+          "kind": "huggingface",
+          "role": "primary",
+          "repo_id": "xiao233333/asi-fimsa-workshop-2026",
+          "revision": "main",
+          "url": "https://huggingface.co/datasets/xiao233333/asi-fimsa-workshop-2026/resolve/main/atera_crop.zarr.zip"
+        },
+        {
+          "kind": "gdrive",
+          "role": "mirror",
+          "folder_id": "1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
+          "folder_url": "https://drive.google.com/drive/folders/1ELxQjcswMcO7w4N6Z74u_2Yt3F5UWHbm",
+          "file_id": null,
+          "url": null
+        }
+      ],
+      "built_by": "prep/",
+      "local_path": "/scratch/project_mnt/S0010/Xiao/asi_fimsa_workshop/staged/atera_crop.zarr.zip"
+    }
+  ],
+  "human_gates": {
+    "atera_cluster_annotation.csv": {
+      "bytes": 5425,
+      "sha256": "2d6b956f7e8a42d95a67bc367bc5fda8855936215d16554ce0f27630b77a9a38"
+    },
+    "crop_window.json": {
+      "bytes": 1918,
+      "sha256": "b755bd7dc508110097364f09714825fc3b38c9ea96fc65239ffd85f44e5cde72"
+    }
+  },
+  "notes": [
+    "Origin URLs are the intended locations; they 404 until the upload runs.",
+    "Coordinates in every artifact are the ALIGNED (H&E) frame, micrometres.",
+    "H&E pixel size 0.27377667386671845 um/px is pinned, not read from a TIFF tag."
+  ],
+  "gdrive_mirror": "pending - needs an interactively configured rclone remote"
+}

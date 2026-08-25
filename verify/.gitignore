@@ -1,0 +1,4 @@
+# Executed notebooks, per-notebook logs and timings from run_notebooks.sh.
+# Regenerate with `bash verify/run_notebooks.sh`; never commit them -- they are
+# several MB of embedded PNGs and they change on every run.
+output/
