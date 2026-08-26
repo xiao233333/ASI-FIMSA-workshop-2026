@@ -31,8 +31,8 @@ import sys
 
 IMAGE_MIMES = ("image/png", "image/jpeg", "image/svg+xml")
 
-# A Participant runs 00_setup_check before the Workshop, on Colab, possibly on
-# hotel wifi. If it stops being a two-minute notebook it stops being run at all.
+# A Participant runs 00_setup_check on Colab, possibly on hotel wifi. If it
+# stops being a two-minute notebook it stops being run at all.
 DEFAULT_BUDGETS = {
     "00_setup_check": 120,
     # Tutorial 3 is the only one with a default budget beyond the setup check,

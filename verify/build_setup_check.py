@@ -2,7 +2,7 @@
 """Generate (or verify) notebooks/00_setup_check.ipynb.
 
 00_setup_check is the one notebook a Participant opens with nothing else to
-hand -- a Colab link in an email, days before the Workshop, on their own laptop.
+hand -- a Colab link in an email, on their own laptop.
 It therefore cannot fetch constraints-colab.txt from the repo; the pin set has to
 be embedded in the notebook itself.
 
@@ -53,7 +53,7 @@ def install_cell() -> str:
     pins = pin_block()
     pkgs = "\n".join(f'    "{p}",' for p in PACKAGES)
     return f'''# ============================================================================
-# Step 1 of 4  --  install the software the Workshop uses
+# Step 1 of 3  --  install the software the Workshop uses
 # ----------------------------------------------------------------------------
 # This usually takes under a minute. Colab wipes everything you install when a
 # session ends, so you will run a cell like this again at the start of each
@@ -156,7 +156,7 @@ def cells():
     code = nbf.v4.new_code_cell
     return [
         md(
-            "# Setup check -- please run this before the Workshop\n"
+            "# Setup check\n"
             "\n"
             "This notebook checks that your Google Colab session can run the "
             "ASI-FIMSA spatial-omics Tutorials. It installs the software we use, "
@@ -164,8 +164,8 @@ def cells():
             "about two minutes and changes nothing on your own computer.\n"
             "\n"
             "**What to do:** click *Runtime -> Run all* in the menu, then wait. "
-            "The last cell tells you either that you are ready, or exactly what to "
-            "send us.\n"
+            "Each step prints whether it worked. If any step reports a problem, "
+            "send us what it printed.\n"
             "\n"
             "**You do not need a graphics card (GPU).** Everything in the Workshop "
             "runs on an ordinary free Colab session. One Tutorial trains a small "
@@ -194,19 +194,12 @@ def cells():
         ),
         code(connectivity_cell()),
         code(figure_cell()),
-        md(
-            "## Step 4 -- the verdict\n"
-            "\n"
-            "Run the last cell. It collects the results of everything above into one "
-            "answer."
-        ),
-        code(verdict_cell()),
     ]
 
 
 def setup_check_cell() -> str:
     return '''# ============================================================================
-# Step 2 of 4  --  what is installed, what Python we have, and is there a GPU
+# Step 2 of 3  --  what is installed, what Python we have, and is there a GPU
 # ============================================================================
 import platform
 import sys
@@ -278,7 +271,7 @@ print("Step 2:", "all packages loaded" if IMPORTS_OK
 
 def connectivity_cell() -> str:
     return '''# ============================================================================
-# Step 3 of 4  --  can this session download data?
+# Step 3 of 3  --  can this session download data?
 # ============================================================================
 from huggingface_hub import hf_hub_download
 
@@ -295,9 +288,9 @@ except Exception as exc:                          # noqa: BLE001
     # Expected until the Workshop dataset is published. Deliberately no
     # traceback: a wall of red text reads like something you did wrong.
     print(f"Could not reach {WORKSHOP_REPO} yet ({type(exc).__name__}).")
-    print("That is expected before the Workshop -- the dataset is still being")
-    print("uploaded. Trying a small public file instead, which tests the same")
-    print("thing: whether this session can download data at all.")
+    print("That is expected while the dataset is still being uploaded. Trying")
+    print("a small public file instead, which tests the same thing: whether")
+    print("this session can download data at all.")
     try:
         path = hf_hub_download(repo_id="bert-base-uncased", filename="config.json")
         DOWNLOAD_OK, downloaded_from = True, "a public test file"
@@ -312,7 +305,7 @@ if DOWNLOAD_OK:
     print(f"\\nStep 3: downloads work ({downloaded_from}, "
           f"{os.path.getsize(path)} bytes).")
 else:
-    print("\\nStep 3: downloads are blocked. Please tell us -- see the last cell.")
+    print("\\nStep 3: downloads are blocked. Please send us what this cell printed.")
 '''
 
 
@@ -343,54 +336,6 @@ except Exception as exc:                          # noqa: BLE001
     print(f"Plotting failed ({type(exc).__name__}: {exc})")
 
 print("Step 3b:", "figure drawn" if PLOT_OK else "figure FAILED")
-'''
-
-
-def verdict_cell() -> str:
-    return '''# ============================================================================
-# Step 4 of 4  --  are you ready?
-# ============================================================================
-checks = {
-    "software installed": IMPORTS_OK,
-    "numpy is the expected version": NUMPY_OK,
-    "downloads work": DOWNLOAD_OK,
-    "figures draw": PLOT_OK,
-}
-
-print("=" * 70)
-for label, passed in checks.items():
-    print(f"  {'PASS' if passed else 'FAIL'}   {label}")
-print("=" * 70)
-print()
-
-if all(checks.values()):
-    print("YOU ARE READY.")
-    print()
-    print("Nothing else to do before the Workshop. You do not need to keep this")
-    print("session open -- each Tutorial installs what it needs when you open it.")
-    if not HAS_GPU:
-        print()
-        print("You have no GPU, and that is fine. Everything is built to run without one.")
-else:
-    failed = [label for label, passed in checks.items() if not passed]
-    print("NOT READY YET -- and this is usually quick for us to fix.")
-    print()
-    print("Please email us BEFORE the Workshop with:")
-    print("  1. Which lines above say FAIL:")
-    for label in failed:
-        print(f"       - {label}")
-    print("  2. A screenshot of this whole notebook, or the text of any red error.")
-    print("  3. Your Python version, printed in Step 2 above:")
-    import platform
-    print(f"       Python {platform.python_version()}")
-    print()
-    print("Things worth trying yourself first, in order:")
-    print("  a. Runtime -> Restart session, then Runtime -> Run all.")
-    print("  b. Open the notebook again in a brand-new Colab session.")
-    print("  c. Try a different network (a phone hotspot rules out a firewall).")
-    print()
-    print("Please do not spend more than ten minutes on this. Send us the")
-    print("screenshot and we will sort it out on the day.")
 '''
 
 
