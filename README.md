@@ -7,8 +7,8 @@ tissue, breast cancer, through three different technologies**, so that every dif
 you see on screen comes from the technology rather than from the sample. You will read
 and plot the data yourself, find the tissue niches that make up a tumour
 microenvironment, and finish by training a small Vision Transformer that predicts gene
-expression straight from an H&E image. Four Tutorials, each self-contained, each a
-single notebook you open with one click.
+expression straight from an H&E image. Four Tutorials plus an optional fifth, each
+self-contained, each a single notebook you open with one click.
 
 ## The Tutorials
 
@@ -21,6 +21,7 @@ Click a badge to open that Tutorial in Google Colab. Start with the setup check
 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/01_read_and_visualise.ipynb) | **01 · Read and visualise** | Load and plot all three platforms — Visium spots, Xenium cells, and the whole-transcriptome Atera run — and see what each one can and cannot resolve. | ~35 min |
 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/02_niche_analysis.ipynb) | **02 · Niche analysis** | Find tissue niches in the tumour microenvironment — immune infiltration, tumour boundary, stroma — from which cells sit next to which. | ~35 min |
 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/02b_cell_cell_interaction.ipynb) | **02b · Cell–cell interaction** | Run stLearn's spatially-constrained ligand–receptor test on the same cells — and watch a gene panel decide, before you start, which questions you are allowed to ask. | ~30 min |
+| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/02c_cell_cell_interaction_liana.ipynb) | **02c · Cell–cell interaction, a second opinion** | Ask 02b's question again with LIANA+ — a consensus of five scoring methods — and keep only what survives the change of tool. Optional if the clock is tight. | ~25 min |
 | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xiao233333/ASI-FIMSA-workshop-2026/blob/main/notebooks/03_vit_gene_expression.ipynb) | **03 · ViT for gene expression** | Train a small Vision Transformer that predicts gene expression from H&E morphology alone, then look honestly at which genes it gets right and which it does not. | ~40 min |
 
 More material is written here than fits a two-hour slot; on the day we work through as
@@ -102,6 +103,7 @@ notebooks/               The five Colab notebooks. Tracked in git; outputs are n
   01_read_and_visualise.ipynb
   02_niche_analysis.ipynb
   02b_cell_cell_interaction.ipynb
+  02c_cell_cell_interaction_liana.ipynb
   03_vit_gene_expression.ipynb
 prep/                    Prep scripts: vendor output -> Staged dataset.
 verify/                  Headless notebook execution, for checking the Tutorials still run.

@@ -61,6 +61,14 @@ netgraph
 bokeh
 leidenalg
 
+# --- Tutorial 02c: LIANA+ ----------------------------------------------------
+# The counterpart to the stlearn entry above, and the contrast is the point:
+# liana declares no numpy floor, so it is requested normally, resolved by the
+# constraints file like everything else, and needs no --no-deps override. Its
+# own dependencies (mudata, plotnine, mizani) come with it and are pinned in
+# constraints-colab.txt.
+liana
+
 # --- fetching Staged datasets ------------------------------------------------
 huggingface_hub
 gdown

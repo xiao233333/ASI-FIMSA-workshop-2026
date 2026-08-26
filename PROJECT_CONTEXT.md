@@ -10,11 +10,23 @@ are in `docs/adr/`.
 
 # Current Goal / Focus
 
-All five notebooks are built and passing the headless suite. Remaining before delivery:
+All six notebooks are built and passing the headless suite. Remaining before delivery:
 publish `atera_crop_lr.h5ad` to Hugging Face and the Drive mirror (built and verified
 locally, not yet uploaded), then run every Tutorial once in a real free-tier Colab
 session — which is the only test that proves the `--no-deps stlearn` install (ADR-0004)
 survives contact with Colab's own numpy and torch.
+
+Two open decisions on the new Tutorial 02c (LIANA+, added 2026-08-26):
+
+1. **Does 02c ship alongside 02b, or replace it?** Right now it is additive and marked
+   optional in the README, which is the safe default but puts six notebooks in a two-hour
+   slot. The case for replacing 02b is that 02c retires ADR-0004 entirely and runs in half
+   the time; the case against is that 02b's whole-panel argument, its H&E score maps and its
+   `run_cci` sender→receiver matrices are better teaching than anything in 02c, and stLearn
+   is the presenting lab's own tool. **Not decided — a human should decide it.**
+2. ~~02c has not been mirrored to the public tree.~~ **Done 2026-08-26** — notebook,
+   README badge and pin set all propagated; the two copies now differ only in `REPO_RAW`.
+   If decision 1 goes the other way, remember the public repo has to give the Tutorial back.
 
 # Scientific / Analysis Context
 
@@ -45,6 +57,11 @@ The four Tutorials:
    permutation test on the same Atera Crop, then `run_cci` for sender → receiver cell-type
    matrices. Opens on the panel argument: the 69-gene Crop supports 4 literature LR pairs,
    the LR panel supports 2,168.
+3b. **Cell–cell interaction, a second opinion** (`02c`, OPTIONAL) — the same question on the
+   same `atera_crop_lr.h5ad` cells via LIANA+: `rank_aggregate` consensus run twice
+   (expression-only, then spatially weighted) as a measured A/B, plus `bivariate` per-cell
+   local scores with Moran's R on the H&E. Exists to show what survives a change of tool.
+   Cut this one first if the slot is tight.
 4. **ViT for gene expression** — from-scratch Vision Transformer on per-spot H&E tiles
    cut from the Visium sample's **full-resolution** H&E TIFF, regressing 16 breast/immune
    markers, with attention rollout.
@@ -61,6 +78,11 @@ The four Tutorials:
 - `stlearn` 1.4.1 for Tutorial 02b, installed **`--no-deps`** against its declared
   `numpy>=2.4.0` so the Colab numpy 2.0.2 hold survives — see ADR-0004. Its own file,
   `requirements-colab-stlearn.txt`; never pinned in `constraints-colab.txt`.
+- `liana` 1.9.0 for Tutorial 02c, installed **normally**. It declares no numpy floor, so it
+  resolves against the pin set with nothing switched off — verified 2026-08-26 with
+  `uv pip compile -c constraints-colab.txt scanpy seaborn liana` → numpy 2.0.2, pandas 2.3.3.
+  It is pinned in `constraints-colab.txt` (unlike stlearn) precisely because a constraint on
+  it is actually consulted. Brings mudata + plotnine + mizani; 02c uses none of them directly.
 - Verification venv: `/scratch/project_mnt/S0010/Xiao/envs/colab312-stlearn` (Python 3.12.9),
   rebuildable with `COLAB312_VENV=... bash verify/make_env.sh`; run notebooks with
   `bash verify/run_notebooks.sh` then `python verify/check_outputs.py`. The older
@@ -155,6 +177,31 @@ The four Tutorials:
   null from `[g for g in adata.var_names if g not in lr_genes]`, and exits (or raises) if that
   pool is too small, or if `n_pairs < 100`. Hand it every measured pair and there is nothing
   left to draw from — which is one reason 02b tests 402 of 2,168 pairs.
+
+- **liana 1.9.0 breaks on a NAMED `var` index.** `li.mt.bivariate` builds an internal table
+  with `pd.DataFrame(...).reset_index().rename(columns={"index": "gene"})`, which only produces
+  a `gene` column when the index has no name. `atera_crop_lr.h5ad` names its index `gene_name`,
+  so the rename no-ops and the implicit merge dies several frames deep with
+  `pandas.errors.MergeError: No common columns to perform merge on`. Fix is one line —
+  `adata.var.index.name = None` (02c also clears `obs.index.name`) — and 02c does it in
+  Section 1 with a comment. Anything else here that calls `li.mt.bivariate` must do the same.
+- **`li.ut.spatial_neighbors` leaves explicit zeros in the graph.** It applies the cutoff as
+  `dist.data = dist.data * (dist.data > cutoff)`, multiplying rather than pruning, so below-
+  cutoff weights stay stored as `0.0`. Two consequences: `W.nnz` reports `max_neighbours`
+  per cell regardless of bandwidth and is **not** the edge count (count `(W > 0).sum(axis=1)`
+  instead), and `li.mt.bivariate` then walks all those stored zeros. On the Crop at
+  bandwidth 15 that is 3,217,206 stored against 269,630 real edges, and one
+  `W.eliminate_zeros()` cut 02c's local-analysis cell from 114.7 s to 27.0 s with an
+  identical answer. The published LIANA+ tutorial notebook has this same wrong per-cell
+  edge count in its output.
+- **LIANA+'s `bandwidth` is not a radius, and there are two different ones.** With a Gaussian
+  kernel the furthest cell still above `cutoff` sits at `bandwidth * sqrt(2*ln(1/cutoff))`
+  = **2.146 × bandwidth** at the default `cutoff=0.1`. So 02b's 30 µm hard radius (median 14
+  neighbours) corresponds to a **15 µm** LIANA bandwidth (median 16), not 30 µm (median 60).
+  Separately, `spatial_pair_proximity` applies its bandwidth to *between-population* mean
+  distances, which on the Crop span 9–224 µm: at 15 µm the median proximity is 0.003 and the
+  weighting annihilates nearly every cross-population score, so 02c uses **30 µm** there.
+  Two scales, two bandwidths, and 02c Section 4 explains why.
 
 - **NumPy 2.0 removed APIs are a live hazard.** Colab ships numpy 2.0.2, where
   `ndarray.ptp()` no longer exists. This bit twice in unrelated code inherited from the
@@ -293,3 +340,84 @@ The four Tutorials:
   repo has previously shipped an unexercised branch. `tifffile` needed no install — Colab
   ships it via scikit-image — so Tutorial 3 still installs scanpy alone. No licence change:
   the TIFF is fetched from 10x's CDN and never redistributed, like the `.h5` and `.tar.gz`.
+- 2026-08-26: **Public release forked off to a second repo.** This tree stays the authoring
+  repo (`xiao233333/ASI-FIMSA-workshop-2026`); the Participant-facing release now lives at
+  `/scratch/user/uqxtan9/analysis_project/ASI_FIMSA_2026` → `GenomicsMachineLearning/ASI_FIMSA_2026`.
+  It carries the notebooks, `prep/`, `verify/`, `docs/adr/`, the pin sets and the licence/context
+  docs, minus `AGENTS.md`, `CLAUDE.md` and `docs/agents/`. **Edits to Participant-facing material
+  must reach both trees** — in particular the Colab badges in `README.md` and `REPO_RAW` in
+  Tutorials 02 and 02b differ between them by design, because each points at its own repo.
+  The Hugging Face dataset repo is shared and unchanged.
+- 2026-08-26: **Tutorial prose trimmed and de-AI'd; Exercises removed.** Markdown across the five
+  notebooks went 144,021 -> 99,175 characters (~24,000 -> ~16,500 words, 69%). **Code cells were not
+  touched at all**, including their comments, and the headless suite still passes 5/5 with 0 errors
+  and 44 figures. What was cut, as categories worth keeping cut: install and pin rationale (the numpy
+  2.0.2 essay, the pin-file callout, `--no-deps`/ADR-0004, the numba thread guard, "do not upgrade
+  torch"); vendor-format archaeology (the `cells.zarr.zip` placeholder essay, the `.zarr.zip`
+  unzip-first explanation, the sopa `geometrize_niches` rename, the `.ptp()`/NumPy 2.0 note, the
+  netgraph adjacency conversion, the stlearn `imagerow`/`uns["spatial"]` essays); and authoring
+  provenance (the CosMx multi-FOV "what we dropped" callout, the `voronoi.py` history). Those facts
+  now live **only here and in `docs/adr/`**, which is the right place for them. Style rules applied,
+  worth keeping if the notebooks are edited again: **no `&mdash;`/`&ndash;` in prose** (280 -> 0; use
+  a comma, colon, parenthesis or full stop), no rhetorical "honest/honesty" (16 -> 0), no forced
+  punchlines or inflated-importance claims. Blockquote callouts 36 -> 21. Tutorial 3's Section 4
+  Transformer explainer was **kept and shortened** (6,806 -> ~4,000), so Section 5's reference to it
+  still resolves. Tutorial 1's title was corrected from "One tissue, three technologies" to "one
+  disease, three technologies", which the Scientific Context section has required since 2026-08-25.
+- 2026-08-26: **Both trees are now byte-identical apart from three URL strings.** The release tree's
+  earlier hand-trim had diverged and lost real content: `03_vit_gene_expression.ipynb` no longer
+  installed scanpy (the `%pip install -q scanpy` cell had been deleted while scanpy was still imported
+  downstream, so it would fail on a fresh Colab), `00_setup_check.ipynb` had lost its final verdict
+  cell, and Tutorial 3's Section 5 referred to a Section 4 that had been deleted. Copying the
+  authoring notebooks over repaired all three. Propagation is now mechanical: `cp` the five notebooks,
+  then `sed` `githubusercontent.com/xiao233333/ASI-FIMSA-workshop-2026` ->
+  `githubusercontent.com/GenomicsMachineLearning/ASI_FIMSA_2026` (exactly 3 occurrences, all
+  `REPO_RAW`, in Tutorials 02 and 02b). Verified afterwards that every markdown cell matches and only
+  those three code lines differ.
+
+- 2026-08-26: Added **Tutorial 02c, cell–cell interaction with LIANA+** (`notebooks/02c_cell_cell_interaction_liana.ipynb`),
+  an optional companion to 02b on the same `atera_crop_lr.h5ad` cells. Written because 02b's
+  `--no-deps stlearn` install (ADR-0004) is the Workshop's largest untested risk and 02c is a
+  drop-in replacement that does not need it: **liana declares no numpy floor**, so
+  `-c constraints-colab.txt scanpy seaborn liana` resolves with numpy held at 2.0.2 and nothing
+  switched off. Verified headless: 0 errors, 8 figures, **103 s** (02b's two analysis cells
+  alone are 216 s). Coverage on this panel is **3,738 of LIANA's 4,620 consensus interactions**.
+  Teaching content 02b does not have: an expression-only vs spatially-weighted A/B of the same
+  consensus (53.7% of unsaturated rows promoted, 46.3% demoted — spatial weighting is a
+  constraint, not an accuracy), per-cell `bivariate` local scores with Moran's R drawn on the
+  H&E, and the receptor-complex story (`ICAM1→ITGAL_ITGB2`, `TGFB1→TGFBR1_TGFBR2`; `CSF1_CSF1R`
+  and 02b's number-one `B2M_HLA-F` are **absent from LIANA's consensus resource entirely**).
+  **The cross-tutorial result is the payoff:** 02b's T cell ↔ dendritic cell axis reproduces
+  under a different tool, database and statistic — top for 4 of the 8 surviving watched pairs.
+  `Plasma cell → T cell` tops 3 more and is flagged in the notebook as a 91-cell artefact
+  candidate, not a finding. Repo plumbing done alongside: liana/mudata/plotnine/mizani pinned
+  in `constraints-colab.txt`, `liana` added to `requirements-colab.txt`, `verify/make_env.sh`
+  now imports liana and loads its resource at build time, README badge row added. **Not yet
+  run in real Colab** — see Current Goal.
+- 2026-08-26: 02c propagated to the public tree, and the propagation rule is now wider than
+  the earlier entry says. Copying the notebooks and `sed`-ing `REPO_RAW` is **not sufficient**
+  when a Tutorial adds a dependency: 02c's install cell fetches `constraints-colab.txt` from
+  the *public* repo's raw URL, so the pin set has to travel with it or the public Tutorial
+  installs unpinned. First attempt moved notebook + badge only and left the public
+  `constraints-colab.txt` without a liana pin. **Propagation checklist is now: notebooks
+  (sed `REPO_RAW`), README badges, `constraints-colab.txt`, `requirements-colab.txt`,
+  `verify/`.** None of those four support files contain an org reference, so they copy verbatim.
+- 2026-08-26: A house-style pass (em-dash entities stripped, titles lower-cased, prose
+  rewrapped to ~100 cols) was run over every notebook including 02c, in both trees. It touched
+  **markdown only** — all 24 of 02c's code cells are byte-identical across the two trees, and
+  the suite still passes. `verify/build_02c.py`, a builder used to author 02c, was **deleted**:
+  it embedded the pre-pass prose and would have silently reverted the restyle if anyone ran it.
+  Prose notebooks here are hand-authored and have no builders; only `00_setup_check` does,
+  because it is genuinely generated. Do not reintroduce a builder for a hand-edited notebook.
+- 2026-08-26: **Tutorial 02c (LIANA+) given the same trim.** Markdown 28,522 -> 21,229 characters
+  (74%), same rules as the other five: no `&mdash;`/`&ndash;` in prose (57 -> 0), no rhetorical
+  "honest" (4 -> 0), Exercises section deleted, and the `--no-deps`-versus-LIANA+ install comparison
+  cut from Section 0.1 (that contrast is an ADR-0004 fact, not Participant material). Code untouched;
+  02c passes headless on its own in 104 s with 8 figures and 0 errors. Its Section 4 bandwidth trap
+  was kept but the LaTeX formula was replaced by the multiplier it evaluates to (~2.15 x bandwidth),
+  which is the part a Participant acts on. The one surviving cross-notebook reference is to **02b's**
+  Section 7.2, and it is written with the `02b` prefix so it does not read as a local section.
+  02c was also **added to the release tree**, which did not have it: the notebook plus its Colab badge
+  row in `README.md` (inserted after 02b) and the blurb's "Four Tutorials" -> "Four Tutorials plus an
+  optional fifth". Note the two `README.md` files have otherwise diverged a long way (authoring 159
+  lines, release 27) and were left that way; only the 02c row was synced.

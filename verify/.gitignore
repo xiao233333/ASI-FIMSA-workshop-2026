@@ -2,3 +2,6 @@
 # Regenerate with `bash verify/run_notebooks.sh`; never commit them -- they are
 # several MB of embedded PNGs and they change on every run.
 output/
+# Rerun folders. The house rule is that a rerun writes to a NEW descriptive
+# output directory rather than overwriting the last one, so match the prefix.
+output_*/

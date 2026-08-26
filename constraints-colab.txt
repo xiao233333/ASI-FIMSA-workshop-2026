@@ -16,6 +16,7 @@
 #   02_niche_analysis     -c constraints-colab.txt squidpy sopa scanpy seaborn netgraph
 #   02b_cell_cell_interaction -c constraints-colab.txt scanpy seaborn bokeh leidenalg
 #                             followed by:  --no-deps stlearn   (see below, and ADR-0004)
+#   02c_cell_cell_interaction_liana -c constraints-colab.txt scanpy seaborn liana
 #   03_vit_gene_expression -c constraints-colab.txt scanpy
 #
 # Tutorial 3 deliberately installs scanpy ONLY. Its ViT runs on torch, PIL,
@@ -191,6 +192,24 @@ narwhals==2.25.0
 tornado==6.5.8
 leidenalg==0.12.0
 texttable==1.7.0
+
+# liana -- Tutorial 02c. Note what is NOT needed here: liana declares no numpy
+# floor at all (its install_requires is anndata, docrep, mudata, numba, pandas<3,
+# plotnine, scanpy, session-info2, tqdm), so unlike stlearn it resolves against
+# the numpy==2.0.2 hold with nothing switched off and no --no-deps override.
+# Verified 2026-08-26: `uv pip compile -c constraints-colab.txt scanpy seaborn
+# liana` returns numpy==2.0.2 and pandas==2.3.3, i.e. the same resolution the
+# rest of the Workshop already lands on.
+#
+# Only four packages below are genuinely new to this pin set -- liana itself,
+# mudata, and plotnine with its mizani leaf. plotnine is a hard dependency of
+# liana (it backs li.pl.*), not something 02c asks for; the Tutorial draws every
+# figure in matplotlib. statsmodels and patsy are plotnine's, and are already
+# satisfied by the existing resolution.
+liana==1.9.0
+mudata==0.4.1
+plotnine==0.15.8
+mizani==0.14.4
 
 # netgraph -- needed by sopa.spatial.prepare_network in Tutorial 2, and NOT a
 # sopa dependency. Installing sopa alone leaves prepare_network unusable, so

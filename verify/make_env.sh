@@ -69,7 +69,7 @@ print("python", sys.version.split()[0])
 for p in ["numpy","torch","scanpy","squidpy","spatialdata","spatialdata-io",
           "spatialdata-plot","sopa","netgraph","anndata","zarr","dask",
           "imagecodecs","tifffile","huggingface-hub","gdown",
-          "stlearn","bokeh","leidenalg"]:
+          "stlearn","bokeh","leidenalg","liana","mudata","plotnine"]:
     print(f"  {p:20s} {version(p)}")
 assert version("numpy") == "2.0.2", "numpy drifted off the Colab pin"
 print("\nnumpy holds at 2.0.2")
@@ -81,6 +81,12 @@ import stlearn
 print(f"stlearn {stlearn.__version__} imports under numpy {version('numpy')}")
 lrs = stlearn.tl.cci.load_lrs(["connectomeDB2020_lit"], species="human")
 print(f"connectomeDB2020_lit loads: {len(lrs):,} ligand-receptor pairs")
+
+# Tutorial 02c's counterpart check. liana needs no --no-deps override, so there
+# is no bet to verify here -- only that it imports and its resource loads.
+import liana
+res = liana.rs.select_resource("consensus")
+print(f"liana {version('liana')}: consensus resource loads, {len(res):,} interactions")
 PY
 echo
 echo "Done. Verify notebooks with:  bash verify/run_notebooks.sh"
