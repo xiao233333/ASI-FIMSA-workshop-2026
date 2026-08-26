@@ -495,5 +495,12 @@ The four Tutorials:
   `notebooks/assets/` had to be added there as new tracked content — and `DATA_LICENCE.md`,
   previously present but untracked in the release tree, was committed with it, because that
   repo now redistributes a CC BY 4.0 image and had no attribution file of its own.
-  Tutorial 3 after the change: 105 s headless, 0 errors, 8 figures, PASS.
+  Verified against the pushed assets, with no local copy and no `WORKSHOP_DATA_DIR`, so the
+  `REPO_RAW` fetch is the path actually exercised: authoring suite **5/5 PASS, 0 errors,
+  40 figures**, Tutorial 3 at 101 s; the release tree's Tutorial 3 PASS against its own repo.
+  The degraded path was exercised too (`REPO_RAW` pointed at a missing branch): the notebook
+  still finishes with 0 errors and 8 figures on white, and `check_outputs.py` FAILs it on the
+  `no H&E available` line -- which is the check that would have caught the original bug.
+  **Do not set `WORKSHOP_DATA_DIR` for a whole-suite run**: Tutorial 1 treats it as
+  authoritative and aborts if its own file is not in it, so it is a per-notebook override only.
 

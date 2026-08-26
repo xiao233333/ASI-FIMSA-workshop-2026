@@ -5,3 +5,5 @@ output/
 # Rerun folders. The house rule is that a rerun writes to a NEW descriptive
 # output directory rather than overwriting the last one, so match the prefix.
 output_*/
+# Suite logs written beside them (run_notebooks.sh > verify/<name>.log).
+output_*.log
