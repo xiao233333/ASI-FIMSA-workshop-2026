@@ -415,3 +415,33 @@ The four Tutorials:
   carries `read_instructions` telling the reader to set `obs['imagerow']`/`obs['imagecol']` for
   stlearn. No Tutorial reads that field any more, so the dataset was not rebuilt or re-uploaded.
   Full suite after the change: 5/5 PASS, 0 errors, 40 figures.
+
+- 2026-08-26: **Notebook 00 trimmed, and Tutorial 2 now actually installs `netgraph`.** Two
+  Participant-facing changes, both propagated to the release tree.
+  **Notebook 00** lost its "please run this before the Workshop" framing and its whole Step 4
+  ("the verdict" — the PASS/FAIL table plus the "email us BEFORE the Workshop" block). Steps 1-3
+  renumbered `of 4` -> `of 3`; Step 3b (the figure check) is untouched and is still what satisfies
+  `check_outputs.py`'s at-least-one-image rule. Every edit went into
+  `verify/build_setup_check.py`, never the `.ipynb` — the notebook is generated, and `--check`
+  catches hand edits. Three collateral fixes were forced by the deletion: the intro's "The last
+  cell tells you either that you are ready" sentence, the blocked-downloads branch's "see the last
+  cell" pointer (caught in review, not in drafting), and the phrase "before the Workshop" in the
+  generator docstring and in one `check_outputs.py` comment. Notebook 00 is now 7 cells / 4 code,
+  runs headless in 17 s against a 120 s budget.
+  **Tutorial 2** had `netgraph` missing from its install line — `PACKAGES` read
+  `["squidpy", "sopa", "scanpy", "seaborn"]` — even though `constraints-colab.txt:16` and
+  `requirements-colab.txt:46-50` both already asserted it was there and `netgraph==4.13.2` was
+  already pinned. Section 5.6 (`sopa.spatial.prepare_network` + `netgraph.Graph`) was therefore
+  silently skipped for **every Colab Participant**; it only ever ran locally, where the
+  verification venv happens to have netgraph. Adding the one name makes the existing docs true.
+  The try/except guard in 5.6 stays — it is what protects a non-Colab reader. No pin file changed.
+  **New gotcha for propagation:** `nbformat >= 4.5` assigns each cell a **random `id`**, so
+  regenerating `00_setup_check.ipynb` independently in both trees can never produce byte-identical
+  files (7 `id` lines differ). Regenerate in one tree and `cp` to the other. This is safe because
+  `--check` compares only cell `source`, and `cp` is already the documented propagation method.
+  **Deliberately not chased:** `README.md` still says "Start with the setup check **before** you
+  arrive" (lines 15-16, 20, 29-41, 52) — its Colab badge points at the right file, so nothing is
+  broken. And the two stale tracked duplicates at the repo root, `00_setup_check.ipynb` and
+  `03_cell_cell_interaction_LIANAplus_breast_cancer_Xenium.ipynb`, are unreferenced dead weight
+  older than the current `notebooks/` copies; the root 00 still carries the removed phrase.
+  Suite after the change: 00 and 02 both PASS, 0 errors, 1 + 14 figures.
