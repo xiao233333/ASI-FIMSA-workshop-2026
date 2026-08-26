@@ -31,7 +31,7 @@ Layout:
 
 NOT written: ``obs['imagerow']`` / ``obs['imagecol']``. stlearn reads cell
 positions from those two columns rather than from ``obsm['spatial']``, and
-deriving them is a teaching beat in Tutorial 02b -- shipping them pre-made would
+deriving them is a teaching beat in the Tutorial -- shipping them pre-made would
 hide the one adaptation a Participant has to make to run a Visium-era tool on
 single cells.
 

@@ -39,9 +39,9 @@ elif [ -n "${WORKSHOP_NOTEBOOKS:-}" ]; then
   read -r -a NOTEBOOKS <<< "$WORKSHOP_NOTEBOOKS"
 else
   # LC_ALL=C on purpose. Under a UTF-8 locale, sort ignores punctuation in the
-  # primary comparison, so 02b_cell_cell_interaction sorts BEFORE 02_niche_analysis
-  # ('b' < 'n') and the run order stops matching the teaching order. Byte order
-  # puts '_' (0x5F) before 'b' (0x62), which is what the numbering means.
+  # primary comparison, so a suffixed notebook name can sort ahead of the plain
+  # one at the same number and the run order stops matching the teaching order.
+  # Byte order puts '_' (0x5F) first, which is what the numbering means.
   mapfile -t NOTEBOOKS < <(find "$REPO/notebooks" -maxdepth 1 -name '*.ipynb' \
                              -not -name '*-checkpoint.ipynb' | LC_ALL=C sort)
 fi

@@ -32,12 +32,10 @@ PIN_END = "# --- END PINS ---"
 
 # The union set, matching requirements-colab.txt. torch is absent on purpose:
 # Colab preinstalls 2.11.0 built for its own driver.
-# bokeh and leidenalg are here for stlearn, which is installed separately below
-# with --no-deps and therefore brings nothing of its own. See ADR-0004.
 PACKAGES = [
     "spatialdata", "spatialdata-io", "spatialdata-plot", "squidpy", "sopa",
-    "scanpy", "netgraph", "huggingface_hub", "gdown", "tifffile",
-    "imagecodecs", "seaborn", "bokeh", "leidenalg",
+    "scanpy", "netgraph", "liana", "huggingface_hub", "gdown", "tifffile",
+    "imagecodecs", "seaborn",
 ]
 
 
@@ -128,16 +126,6 @@ if IN_COLAB:
         rc = _run([sys.executable, "-m", "pip", "install", "-q",
                    "-c", str(constraints), *PACKAGES])
     INSTALL_OK = rc == 0
-
-    # stlearn, alone, with --no-deps. It declares numpy>=2.4.0, and Colab has
-    # already imported numpy 2.0.2 -- satisfying that floor would force a session
-    # restart. Everything stlearn actually imports is already installed above,
-    # plus torchvision, which Colab preinstalls. ADR-0004 has the full argument.
-    rc_stlearn = _run([sys.executable, "-m", "pip", "install", "-q",
-                       "--no-deps", "stlearn"])
-    if rc_stlearn != 0:
-        print("stlearn did not install -- Tutorial 02b will not run.")
-    INSTALL_OK = INSTALL_OK and rc_stlearn == 0
     importlib.invalidate_caches()
 else:
     print("Not running in Google Colab, so nothing was installed.")
@@ -170,10 +158,10 @@ def cells():
         md(
             "# Setup check -- please run this before the Workshop\n"
             "\n"
-            "This short notebook checks that your Google Colab session can run the "
+            "This notebook checks that your Google Colab session can run the "
             "ASI-FIMSA spatial-omics Tutorials. It installs the software we use, "
             "downloads one tiny test file, and draws one small figure. It takes "
-            "about two minutes and it changes nothing on your own computer.\n"
+            "about two minutes and changes nothing on your own computer.\n"
             "\n"
             "**What to do:** click *Runtime -> Run all* in the menu, then wait. "
             "The last cell tells you either that you are ready, or exactly what to "
@@ -181,12 +169,12 @@ def cells():
             "\n"
             "**You do not need a graphics card (GPU).** Everything in the Workshop "
             "runs on an ordinary free Colab session. One Tutorial trains a small "
-            "neural network, and it is a few minutes faster with a GPU, but it is "
+            "neural network, which is a few minutes faster with a GPU, but it is "
             "designed to finish comfortably without one.\n"
             "\n"
             "**If something goes wrong, nothing is broken.** Colab sessions are "
-            "disposable. You can always close the tab, open the notebook again and "
-            "start over."
+            "disposable. You can close the tab, open the notebook again and start "
+            "over."
         ),
         code(install_cell()),
         md(
@@ -194,20 +182,15 @@ def cells():
             "\n"
             "The next cell imports each package and prints its version, then reports "
             "your Python version and whether this session happens to have a GPU. "
-            "A row marked `MISSING` is the useful kind of failure: it tells us "
-            "precisely what did not install."
+            "A row marked `MISSING` tells us exactly what did not install."
         ),
         code(setup_check_cell()),
         md(
             "## Step 3 -- check this session can reach the Workshop data\n"
             "\n"
             "The Tutorials download prepared datasets while they run, so your Colab "
-            "session needs to be able to reach the internet. This downloads one very "
-            "small file to prove it can.\n"
-            "\n"
-            "The Workshop dataset is still being uploaded, so it is completely normal "
-            "for the first attempt below to say it cannot find it. In that case we "
-            "fall back to a small public file, which tests the same thing."
+            "session needs to reach the internet. This downloads one very small file "
+            "to prove it can."
         ),
         code(connectivity_cell()),
         code(figure_cell()),
@@ -240,7 +223,7 @@ CHECKS = [
     ("tifffile", "tifffile"), ("imagecodecs", "imagecodecs"),
     ("seaborn", "seaborn"), ("huggingface_hub", "huggingface_hub"),
     ("gdown", "gdown"), ("torch", "torch"), ("torchvision", "torchvision"),
-    ("bokeh", "bokeh"), ("leidenalg", "leidenalg"), ("stlearn", "stlearn"),
+    ("liana", "liana"),
 ]
 
 print(f"Python {platform.python_version()}")

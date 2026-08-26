@@ -15,7 +15,7 @@ these scripts produce, never the scripts themselves.
 |---|---|---|
 | `atera_wholeslide_cells.h5ad` | 19.9 MB | All 170,057 cells: aligned centroids, vendor graphclust / kmeans / UMAP / PCA, merged cell types, and a 69-gene marker panel as dense float32 `X`. No images. |
 | `atera_crop.zarr.zip` | 18.0 MB | A `SpatialData` Crop: 2000 µm window with an H&E overview, a native-resolution `he_zoom`, per-cell boundary polygons and the annotated table, all in one micrometre coordinate system. |
-| `atera_crop_lr.h5ad` | 5.4 MB | The SAME 16,006 Crop cells with a different panel: 1,673 connectomeDB2020 ligands and receptors that Atera measures, as raw sparse counts. Built for Tutorial 02b, whose ligand-receptor test the 69-gene panel cannot support — it yields 4 complete literature pairs against 2,168 here. |
+| `atera_crop_lr.h5ad` | 5.4 MB | The SAME 16,006 Crop cells with a different panel: 1,673 connectomeDB2020 ligands and receptors that Atera measures, as raw sparse counts. Built for Tutorial 3, whose ligand-receptor test the 69-gene panel cannot support — it yields 4 complete literature pairs against 2,168 here. |
 
 They are written to `$PREP_OUT`
 (default `/scratch/project_mnt/S0010/Xiao/asi_fimsa_workshop/staged`), not into the repo —

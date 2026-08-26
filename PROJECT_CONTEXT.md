@@ -10,23 +10,13 @@ are in `docs/adr/`.
 
 # Current Goal / Focus
 
-All six notebooks are built and passing the headless suite. Remaining before delivery:
-publish `atera_crop_lr.h5ad` to Hugging Face and the Drive mirror (built and verified
-locally, not yet uploaded), then run every Tutorial once in a real free-tier Colab
-session — which is the only test that proves the `--no-deps stlearn` install (ADR-0004)
-survives contact with Colab's own numpy and torch.
+All five notebooks are built and passing the headless suite (00, 01, 02, 03, 04 -- 0 errors,
+40 figures). Remaining before delivery: run every Tutorial once in a real free-tier Colab
+session, which is the only test that proves the pin set survives contact with Colab's own
+numpy and torch.
 
-Two open decisions on the new Tutorial 02c (LIANA+, added 2026-08-26):
-
-1. **Does 02c ship alongside 02b, or replace it?** Right now it is additive and marked
-   optional in the README, which is the safe default but puts six notebooks in a two-hour
-   slot. The case for replacing 02b is that 02c retires ADR-0004 entirely and runs in half
-   the time; the case against is that 02b's whole-panel argument, its H&E score maps and its
-   `run_cci` sender→receiver matrices are better teaching than anything in 02c, and stLearn
-   is the presenting lab's own tool. **Not decided — a human should decide it.**
-2. ~~02c has not been mirrored to the public tree.~~ **Done 2026-08-26** — notebook,
-   README badge and pin set all propagated; the two copies now differ only in `REPO_RAW`.
-   If decision 1 goes the other way, remember the public repo has to give the Tutorial back.
+**The stLearn Tutorial was retired on 2026-08-26.** The cell-cell interaction slot is now
+Tutorial 3, LIANA+ only. See the Change Log entry for what that removed.
 
 # Scientific / Analysis Context
 
@@ -53,15 +43,11 @@ The four Tutorials:
    composition kNN + KMeans (derived from the parent course's `3.2_neighborhood.ipynb`)
    → sopa `vectorize_niches` / `niches_geometry_stats` / `cells_to_groups`. Runs on the
    Atera Crop (~20–30k cells), not the full slide.
-3. **Cell–cell interaction** (`02b`) — stLearn's spatially-constrained ligand–receptor
-   permutation test on the same Atera Crop, then `run_cci` for sender → receiver cell-type
-   matrices. Opens on the panel argument: the 69-gene Crop supports 4 literature LR pairs,
-   the LR panel supports 2,168.
-3b. **Cell–cell interaction, a second opinion** (`02c`, OPTIONAL) — the same question on the
-   same `atera_crop_lr.h5ad` cells via LIANA+: `rank_aggregate` consensus run twice
-   (expression-only, then spatially weighted) as a measured A/B, plus `bivariate` per-cell
-   local scores with Moran's R on the H&E. Exists to show what survives a change of tool.
-   Cut this one first if the slot is tight.
+3. **Cell–cell interaction** (`03_cell_cell_interaction_liana`) — LIANA+ on the
+   `atera_crop_lr.h5ad` cells: `rank_aggregate` consensus run twice (expression-only, then
+   spatially weighted) as a measured A/B, plus `bivariate` per-cell local scores with Moran's
+   R on the H&E. Opens on the panel argument: the 69-gene Crop supports a handful of literature
+   LR pairs, the 1,673-gene panel supports thousands.
 4. **ViT for gene expression** — from-scratch Vision Transformer on per-spot H&E tiles
    cut from the Visium sample's **full-resolution** H&E TIFF, regressing 16 breast/immune
    markers, with attention rollout.
@@ -75,18 +61,15 @@ The four Tutorials:
 - Pin set: `constraints-colab.txt` (two-tier — exact pins for the stack and every
   compatibility-critical transitive; floors only for what Colab already ships, so pip does
   not replace working preinstalled copies). `requirements-colab.txt` is the union set.
-- `stlearn` 1.4.1 for Tutorial 02b, installed **`--no-deps`** against its declared
-  `numpy>=2.4.0` so the Colab numpy 2.0.2 hold survives — see ADR-0004. Its own file,
-  `requirements-colab-stlearn.txt`; never pinned in `constraints-colab.txt`.
-- `liana` 1.9.0 for Tutorial 02c, installed **normally**. It declares no numpy floor, so it
+- `liana` 1.9.0 for Tutorial 3, installed **normally**. It declares no numpy floor, so it
   resolves against the pin set with nothing switched off — verified 2026-08-26 with
   `uv pip compile -c constraints-colab.txt scanpy seaborn liana` → numpy 2.0.2, pandas 2.3.3.
-  It is pinned in `constraints-colab.txt` (unlike stlearn) precisely because a constraint on
-  it is actually consulted. Brings mudata + plotnine + mizani; 02c uses none of them directly.
+  Pinned in `constraints-colab.txt`. Brings mudata + plotnine + mizani; the Tutorial uses none
+  of them directly. **stlearn is no longer installed anywhere** — see ADR-0004, superseded.
 - Verification venv: `/scratch/project_mnt/S0010/Xiao/envs/colab312-stlearn` (Python 3.12.9),
   rebuildable with `COLAB312_VENV=... bash verify/make_env.sh`; run notebooks with
-  `bash verify/run_notebooks.sh` then `python verify/check_outputs.py`. The older
-  `envs/colab312` predates stlearn and cannot run 02b.
+  `bash verify/run_notebooks.sh` then `python verify/check_outputs.py`. The venv name is
+  historical: it still carries a stlearn install, which nothing now uses.
 - Install with `uv pip install --system`, not pip — measured ~5x faster (union set 7.9 s vs
   45.4 s cold against a simulated Colab base)
 - Python only, no R — see ADR-0002
@@ -159,31 +142,13 @@ The four Tutorials:
   graphclust at k=34. No label was forced; all four genes are in the shipped 69-gene panel so
   a Participant can re-ask the question. This is teaching material, not a defect.
 
-- **stlearn is a Visium-era tool and shows it in three places.** (1) It reads cell positions
-  from `obs["imagerow"]` / `obs["imagecol"]`, NOT `obsm["spatial"]`; the KeyError arrives
-  several frames deep. (2) `st.tl.cci.run` computes its neighbourhood radius from Visium
-  `uns["spatial"][...]["scalefactors"]` unless `distance=` is passed explicitly — always pass
-  it, in micrometres. (3) Its spatial plots (`st.pl.lr_plot`, `lr_result_plot`, `het_plot`)
-  hard-require that same `uns["spatial"]` structure and cannot be talked out of it with
-  `spot_size`; 02b draws those figures in raw matplotlib instead. The non-spatial plots
-  (`lr_summary`, `lr_diagnostics`, `lr_n_spots`, `cci_map`, `lr_cci_map`, `ccinet_plot`,
-  `lr_chord_plot`) all work, but each manages its own figure — passing them an `ax` from
-  `plt.subplots` leaves the other panels blank.
-- **`st.tl.cci.run` calls `numba.set_num_threads(os.cpu_count())`.** On Bunya `os.cpu_count()`
-  reports the node's 512 cores while the job sees 16, so it raises `ValueError: The number of
-  threads must be between 1 and 16`. Colab is unaffected. 02b reconciles the two before
-  importing stlearn; anything else calling stlearn here must do the same.
-- **stlearn's permutation needs genes it is NOT testing.** `perform_spot_testing` builds its
-  null from `[g for g in adata.var_names if g not in lr_genes]`, and exits (or raises) if that
-  pool is too small, or if `n_pairs < 100`. Hand it every measured pair and there is nothing
-  left to draw from — which is one reason 02b tests 402 of 2,168 pairs.
 
 - **liana 1.9.0 breaks on a NAMED `var` index.** `li.mt.bivariate` builds an internal table
   with `pd.DataFrame(...).reset_index().rename(columns={"index": "gene"})`, which only produces
   a `gene` column when the index has no name. `atera_crop_lr.h5ad` names its index `gene_name`,
   so the rename no-ops and the implicit merge dies several frames deep with
   `pandas.errors.MergeError: No common columns to perform merge on`. Fix is one line —
-  `adata.var.index.name = None` (02c also clears `obs.index.name`) — and 02c does it in
+  `adata.var.index.name = None` (Tutorial 3 also clears `obs.index.name`) — and it does this in
   Section 1 with a comment. Anything else here that calls `li.mt.bivariate` must do the same.
 - **`li.ut.spatial_neighbors` leaves explicit zeros in the graph.** It applies the cutoff as
   `dist.data = dist.data * (dist.data > cutoff)`, multiplying rather than pruning, so below-
@@ -191,17 +156,17 @@ The four Tutorials:
   per cell regardless of bandwidth and is **not** the edge count (count `(W > 0).sum(axis=1)`
   instead), and `li.mt.bivariate` then walks all those stored zeros. On the Crop at
   bandwidth 15 that is 3,217,206 stored against 269,630 real edges, and one
-  `W.eliminate_zeros()` cut 02c's local-analysis cell from 114.7 s to 27.0 s with an
+  `W.eliminate_zeros()` cut Tutorial 3's local-analysis cell from 114.7 s to 27.0 s with an
   identical answer. The published LIANA+ tutorial notebook has this same wrong per-cell
   edge count in its output.
 - **LIANA+'s `bandwidth` is not a radius, and there are two different ones.** With a Gaussian
   kernel the furthest cell still above `cutoff` sits at `bandwidth * sqrt(2*ln(1/cutoff))`
-  = **2.146 × bandwidth** at the default `cutoff=0.1`. So 02b's 30 µm hard radius (median 14
+  = **2.146 × bandwidth** at the default `cutoff=0.1`. A 30 µm hard radius (median 14
   neighbours) corresponds to a **15 µm** LIANA bandwidth (median 16), not 30 µm (median 60).
   Separately, `spatial_pair_proximity` applies its bandwidth to *between-population* mean
   distances, which on the Crop span 9–224 µm: at 15 µm the median proximity is 0.003 and the
-  weighting annihilates nearly every cross-population score, so 02c uses **30 µm** there.
-  Two scales, two bandwidths, and 02c Section 4 explains why.
+  weighting annihilates nearly every cross-population score, so Tutorial 3 uses **30 µm** there.
+  Two scales, two bandwidths, and Tutorial 3 Section 4 explains why.
 
 - **NumPy 2.0 removed APIs are a live hazard.** Colab ships numpy 2.0.2, where
   `ndarray.ptp()` no longer exists. This bit twice in unrelated code inherited from the
@@ -421,3 +386,32 @@ The four Tutorials:
   row in `README.md` (inserted after 02b) and the blurb's "Four Tutorials" -> "Four Tutorials plus an
   optional fifth". Note the two `README.md` files have otherwise diverged a long way (authoring 159
   lines, release 27) and were left that way; only the 02c row was synced.
+- 2026-08-26: **stLearn Tutorial retired; notebooks renumbered.** A human decision, taken
+  after the 02b-vs-02c question recorded above: the release ships **one** cell-cell interaction
+  Tutorial, and it is LIANA+. `notebooks/02b_cell_cell_interaction.ipynb` was deleted from both
+  trees, `02c_cell_cell_interaction_liana.ipynb` became **`03_cell_cell_interaction_liana.ipynb`**
+  and `03_vit_gene_expression.ipynb` became **`04_vit_gene_expression.ipynb`**. The teaching order
+  is now 00, 01, 02, 03, 04, and `verify/run_notebooks.sh` picks it up from the filenames.
+  **What this removed from the dependency surface**, which is the real win: `stlearn` is no longer
+  installed anywhere, so ADR-0004's `--no-deps` override is gone, and with it `bokeh`, `leidenalg`
+  and their leaves (`xyzservices`, `narwhals`, `tornado`). `requirements-colab-stlearn.txt` was
+  deleted. `texttable` stays, re-attributed to python-igraph, which Tutorial 1 genuinely needs.
+  **`00_setup_check` gained a real gap-fix in the process:** it installed and version-checked
+  `stlearn` but never `liana`, so it had been passing while failing to test the one dependency
+  Tutorial 3 needs. It now installs and checks `liana` instead. Note 00's markdown lives in
+  `verify/build_setup_check.py`, not in the notebook — regenerating overwrites hand edits, so
+  edit the generator and re-run it (`--check` fails if the notebook is stale).
+  **Tutorial 3 was rewritten to stand alone.** It was written as "a second opinion" whose spine
+  was a comparison against 02b; the cross-tutorial check (old Section 7.1), the stLearn headline
+  quote and the hard-radius translation are gone, its Section 9 now carries the full limitations
+  list it used to defer to 02b, and five **code** cells were edited for the first time in this
+  effort — a plot legend, two print blocks, the `receptor_02b` variable and two comments. Logic
+  and outputs are unchanged; the notebook passes headless in 101 s.
+  Also updated: both READMEs, `constraints-colab.txt`, `requirements-colab.txt`, all four
+  `verify/` scripts, `DATA_LICENCE.md` (connectomeDB2020 is now credited to the prep pipeline
+  that fetches it, not to a Tutorial that loaded it through stlearn), `prep/README.md` and
+  `prep/06_build_cci_table.py`. ADR-0004 is marked **superseded** rather than deleted.
+  **Known stale, deliberately not chased:** the published `atera_crop_lr.h5ad` on Hugging Face
+  carries `read_instructions` telling the reader to set `obs['imagerow']`/`obs['imagecol']` for
+  stlearn. No Tutorial reads that field any more, so the dataset was not rebuilt or re-uploaded.
+  Full suite after the change: 5/5 PASS, 0 errors, 40 figures.

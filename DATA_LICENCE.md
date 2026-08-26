@@ -60,17 +60,18 @@ Downloaded live from 10x's CDN by the Tutorials. Not redistributed here.
 
 ## connectomeDB2020 — the ligand–receptor pair list
 
-Used by Tutorial 02b, and by `prep/06_build_cci_table.py` to decide which genes the
-`atera_crop_lr.h5ad` panel contains.
+Used by `prep/06_build_cci_table.py` to decide which genes the `atera_crop_lr.h5ad`
+panel contains, and quoted for contrast in Tutorial 3.
 
 - **Source:** connectomeDB2020, published as part of NATMI — Hou R., Denisenko E.,
   Ong H.T., Ramilowski J.A., Forrest A.R.R., "Predicting cell-to-cell communication
   networks using NATMI", *Nature Communications* 11, 5011 (2020).
   <https://www.nature.com/articles/s41467-020-18873-z>
-- **How it reaches this repo:** it does not. The pair tables ship inside the `stlearn`
-  wheel (`stlearn/tl/cci/databases/connectomeDB2020_{lit,put}.txt`) and Tutorial 02b
-  loads them from there with `stlearn.tl.cci.load_lrs()`. The prep script fetches them
-  from the stLearn GitHub repository at build time and does not keep them.
+- **How it reaches this repo:** it does not. The prep script fetches the pair tables
+  from the stLearn GitHub repository at build time
+  (`stlearn/tl/cci/databases/connectomeDB2020_{lit,put}.txt`) and does not keep them.
+  No Tutorial downloads them; Tutorial 3 reads only the per-database coverage counts
+  that `prep/06_build_cci_table.py` recorded in `atera_crop_lr.h5ad`.
 - **What IS committed here:** `prep/cci_panel_genes.txt`, a list of 1,673 HGNC gene
   symbols — the intersection of connectomeDB2020's gene set with the Atera panel,
   filtered by detection. A list of gene symbols is a fact about which genes this

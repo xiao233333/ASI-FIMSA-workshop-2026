@@ -35,13 +35,12 @@ IMAGE_MIMES = ("image/png", "image/jpeg", "image/svg+xml")
 # hotel wifi. If it stops being a two-minute notebook it stops being run at all.
 DEFAULT_BUDGETS = {
     "00_setup_check": 120,
-    # 02b is the only Tutorial with a default budget beyond the setup check,
-    # because its two stlearn cells are pure CPU work whose cost scales with the
-    # tested pair count and the permutation counts -- exactly the numbers someone
-    # will one day raise "just to see". The figure is deliberately loose: 02b runs
-    # in ~110 s on an idle box at 4 threads and 268 s on the same box under a load
-    # average of 500, so this catches a real regression and not a busy node.
-    "02b_cell_cell_interaction": 420,
+    # Tutorial 3 is the only one with a default budget beyond the setup check,
+    # because its liana cells are pure CPU work whose cost scales with the
+    # permutation count -- exactly the number someone will one day raise "just to
+    # see". The figure is deliberately loose: it runs in ~105 s on an idle box at
+    # 4 threads, so this catches a real regression and not a busy node.
+    "03_cell_cell_interaction_liana": 420,
 }
 
 

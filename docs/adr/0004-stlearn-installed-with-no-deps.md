@@ -1,5 +1,13 @@
 # stlearn is installed with --no-deps, against its declared numpy floor
 
+> **Superseded 2026-08-26.** The Workshop no longer ships a stLearn Tutorial. The
+> cell-cell interaction slot is now Tutorial 3, which uses LIANA+ and needs no
+> dependency override, so `stlearn` is not installed anywhere: it is gone from
+> `constraints-colab.txt`, `requirements-colab.txt`, `verify/make_env.sh` and
+> `00_setup_check.ipynb`, and `requirements-colab-stlearn.txt` was deleted. The
+> record below is kept because the reasoning still applies to any package that
+> declares a floor above the numpy Colab has already imported.
+
 Tutorial 02b runs [stLearn](https://stlearn.readthedocs.io/)'s spatially-constrained
 ligand–receptor test. `stlearn==1.4.1` declares `numpy>=2.4.0`. `constraints-colab.txt`
 pins `numpy==2.0.2`, because Colab preinstalls 2.0.2 and imports it before the first
@@ -57,5 +65,5 @@ switch to the second-pin-set fallback above rather than pinning stlearn backward
 `st.tl.cci.run` calls `numba.set_num_threads(os.cpu_count())`. Where a process is capped
 below the machine's core count — any Slurm job, any container with a CPU limit — that
 overshoots numba's ceiling and raises `ValueError: The number of threads must be between
-1 and N`. Colab is unaffected (both numbers are 2). Tutorial 02b reconciles the two
-before importing stlearn, and says why in the notebook.
+1 and N`. Colab is unaffected (both numbers are 2). The Tutorial that used stlearn reconciled
+the two before importing it.

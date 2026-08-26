@@ -6,14 +6,10 @@
 # own GPU. Locally we have to bring our own, so this file adds:
 #   * jupyter + nbconvert + ipykernel, to execute notebooks headlessly
 #   * torch, pinned to the version Colab ships so a version-dependent break in
-#     Tutorial 3 surfaces here rather than in the room
-#   * torchvision, which Colab also preinstalls and which `import stlearn`
-#     needs: stlearn/pp.py imports image_preprocessing.feature_extractor ->
-#     model_zoo -> `from torchvision import models, transforms`, at module level
-#     and unconditionally, even though Tutorial 02b never extracts image features
+#     Tutorial 4 surfaces here rather than in the room
 #
 # torch is pinned to the +cpu build. Bunya's general partition has no GPU, and
-# Tutorial 3 selects its device with
+# Tutorial 4 selects its device with
 #     device = "cuda" if torch.cuda.is_available() else "cpu"
 # so the CPU wheel exercises exactly the path a GPU-less Colab session takes,
 # at a tenth of the download. Install it with:
