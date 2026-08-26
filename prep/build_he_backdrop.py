@@ -85,6 +85,7 @@ def main() -> None:
         sys.exit(f"Crop not found: {args.crop}\n"
                  "Build it with prep/04_build_crop.py, or pass --crop.")
 
+    C.WORK_DIR.mkdir(parents=True, exist_ok=True)
     workdir = Path(tempfile.mkdtemp(prefix="he_backdrop_", dir=C.WORK_DIR))
     try:
         sdata = open_crop(args.crop, workdir)
