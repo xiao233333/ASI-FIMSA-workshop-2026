@@ -95,6 +95,9 @@ The four Tutorials:
   `03_build_wholeslide.py` -> `04_build_crop.py` -> `06_build_cci_table.py` ->
   `05_make_manifest.py`. **06 runs before 05** (05 must see every artifact) and after 04
   (06 takes its cell list from the built Crop rather than re-deriving the window).
+  `prep/build_he_backdrop.py` sits **outside** that chain: it is unnumbered, writes a repo
+  asset (`notebooks/assets/atera_crop_he.{jpg,json}`) rather than a Staged dataset, and so
+  never appears in `manifest.json` or `upload_to_origins.sh`. Re-run it after 04.
 - Two human sign-off gates, both committed: `prep/atera_cluster_annotation.csv`
   (34 vendor clusters -> named cell types) and `prep/crop_window.json` (the Crop).
   `prep/cci_panel_genes.txt` is committed too but is a generated record, not a gate.
@@ -176,6 +179,16 @@ The four Tutorials:
 - `gdown` 6.x **removed the `--fuzzy` flag** (it is the default now). Any snippet copied from
   older tutorials that passes `--fuzzy` will fail with "unrecognized arguments". No notebook
   here uses it.
+
+- **An optional feature gated on `try: import <pkg>` is a lie unless `<pkg>` is on that
+  Tutorial's own install line.** The verification venv installs the *union* pin set, so every
+  optional import succeeds locally and the fallback branch is never taken; on Colab only that
+  Tutorial's own `PACKAGES` exist. Tutorial 3's H&E backdrop was gated on `import spatialdata`
+  while its install line read `scanpy seaborn liana`, so it drew on white for every Participant
+  and passed the headless suite every time. Two defences now: prefer an asset a Tutorial can
+  read with what it already installs, and register the fallback's own message in
+  `verify/check_outputs.py`'s `FORBIDDEN` so taking it locally is a FAIL. When adding a
+  `try: import`, check it against that notebook's `PACKAGES` first.
 
 # Change Log
 
@@ -445,3 +458,42 @@ The four Tutorials:
   `03_cell_cell_interaction_LIANAplus_breast_cancer_Xenium.ipynb`, are unreferenced dead weight
   older than the current `notebooks/` copies; the root 00 still carries the removed phrase.
   Suite after the change: 00 and 02 both PASS, 0 errors, 1 + 14 figures.
+
+- 2026-08-27: **Tutorial 3's H&E backdrop reached Participants for the first time.** It had
+  been gated on `HAVE_SPATIALDATA`, set by a `try: import spatialdata` in the imports cell,
+  while Tutorial 3's install line is `scanpy seaborn liana` and Colab ships no spatialdata:
+  the import always failed on Colab, `HAVE_HE` went False and both Section 6 local-score
+  figures were drawn on white, under the message `no H&E available`. It only ever rendered in
+  the verification venv, which carries the union pin set, so the suite passed throughout. See
+  the new *Known issues* entry for the general shape of this.
+  **The fix moves the image out of the Crop.** New unnumbered builder
+  `prep/build_he_backdrop.py` flattens `atera_crop.zarr`'s `images["he"]` into
+  `notebooks/assets/atera_crop_he.jpg` (1826², JPEG q92, no chroma subsampling, **2.14 MB**)
+  plus `atera_crop_he.json`, which carries the micrometre extent computed from the element's
+  own transformation — so the "never hard-code a pixel size" rule still holds, the derivation
+  just happens once in prep instead of in every Tutorial. Tutorial 3 now fetches both over
+  `REPO_RAW` (the same mechanism that already fetches `constraints-colab.txt`) and reads them
+  with `plt.imread` + `json.loads`. **Nothing was added to its install line**: no spatialdata,
+  no zarr, no new package at all. It also stops downloading `atera_crop.zarr.zip` and stops
+  unzipping it, so the Tutorial's download drops from ~23 MB to ~7.5 MB.
+  **JPEG rather than PNG, deliberately.** PNG of this image lands near the zarr's own 7.7 MB;
+  the backdrop is desaturated to greyscale, percentile-stretched, alpha-blended under a scatter
+  and rendered at ~600 px. Measured: the rendered Section 6 figures differ from the lossless
+  zarr path by **max 5/255 per channel, no pixel above 8** — visually identical. The lossless
+  original stays published inside `atera_crop.zarr.zip` on Hugging Face.
+  **`verify/check_outputs.py` gained a `FORBIDDEN` map** — per-notebook strings that mean "ran,
+  but degraded". Seeded with `03_cell_cell_interaction_liana: ["no H&E available"]`. This is
+  the check that would have caught the original bug the moment the asset stopped resolving.
+  **Licence:** the JPEG is the same downsampled pixels already published in
+  `atera_crop.zarr.zip`, so no new disclosure; `DATA_LICENCE.md` records it and the CC BY 4.0
+  attribution travels in the JSON's `licence` field. **`prep/manifest.json` was deliberately
+  NOT updated** — it records the Hugging Face and Drive staged origins, and a repo-committed
+  asset is not one of those. Do not "fix" that.
+  **Propagation surface is now wider again**: `notebooks/assets/` has to travel between the two
+  trees along with the notebooks, README badges and the two pin files. The release repo tracks
+  only `notebooks/`, `README.md`, `LICENSE`, `.gitignore` and the two pin files, so
+  `notebooks/assets/` had to be added there as new tracked content — and `DATA_LICENCE.md`,
+  previously present but untracked in the release tree, was committed with it, because that
+  repo now redistributes a CC BY 4.0 image and had no attribution file of its own.
+  Tutorial 3 after the change: 105 s headless, 0 errors, 8 figures, PASS.
+

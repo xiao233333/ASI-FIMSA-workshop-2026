@@ -9,6 +9,9 @@ themselves:
 
   * zero error outputs   -- a traceback anywhere is a failure
   * >=1 embedded image   -- proof that at least one figure actually rendered
+  * no degradation line  -- a Tutorial that quietly falls back to a lesser figure
+                            prints a friendly message and exits 0, so the message
+                            itself is the only evidence. See FORBIDDEN below.
   * wall time            -- read back from the per-cell execution timestamps
                             nbclient records, so it reflects the notebook, not
                             the harness
@@ -43,6 +46,16 @@ DEFAULT_BUDGETS = {
     "03_cell_cell_interaction_liana": 420,
 }
 
+# Lines that mean "this ran, but not properly". A Tutorial that degrades
+# gracefully is doing the right thing for a Participant on bad wifi and the wrong
+# thing for a test: nothing raises, every figure is still drawn, and the run looks
+# clean. Tutorial 3 shipped with its H&E backdrop silently skipped on Colab for
+# exactly this reason. If a notebook has a fallback path, put its message
+# here so taking the fallback locally is a FAIL.
+FORBIDDEN = {
+    "03_cell_cell_interaction_liana": ["no H&E available"],
+}
+
 
 def parse_ts(value):
     if not value:
@@ -59,6 +72,7 @@ def inspect(path: pathlib.Path) -> dict:
 
     errors, images, executed = [], 0, 0
     starts, ends, per_cell = [], [], []
+    text_parts = []
 
     for idx, cell in enumerate(cells, 1):
         for out in cell.get("outputs", []):
@@ -69,6 +83,8 @@ def inspect(path: pathlib.Path) -> dict:
             data = out.get("data") or {}
             if any(m in data for m in IMAGE_MIMES):
                 images += 1
+            text_parts.append("".join(out.get("text") or ""))
+            text_parts.append("".join(data.get("text/plain") or ""))
 
         meta = (cell.get("metadata") or {}).get("execution") or {}
         start = parse_ts(meta.get("iopub.execute_input") or meta.get("shell.execute_reply.started"))
@@ -89,6 +105,7 @@ def inspect(path: pathlib.Path) -> dict:
         "executed": executed,
         "errors": errors,
         "images": images,
+        "text": "".join(text_parts),
         "wall": wall,
         "per_cell": sorted(per_cell, key=lambda t: -t[1]),
     }
@@ -164,6 +181,9 @@ def main() -> int:
             problems.append("no embedded image output")
         if r["executed"] == 0:
             problems.append("no cell was executed")
+        for line in FORBIDDEN.get(r["name"], []):
+            if line in r["text"]:
+                problems.append(f"degraded: printed {line!r}")
         budget = budgets.get(r["name"])
         if budget is not None and wall is not None and wall > budget:
             problems.append(f"wall {wall:.0f}s over budget {budget:.0f}s")

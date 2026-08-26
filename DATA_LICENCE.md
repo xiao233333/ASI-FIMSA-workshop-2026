@@ -27,6 +27,14 @@ publish two small artifacts (~38 MB total) at
 - `atera_crop.zarr.zip` — a 2,000 µm square containing 16,006 cells, with an H&E overview,
   a native-resolution zoom, per-cell boundary polygons and the annotated table.
 
+**One further derived artifact is committed to this repository rather than staged.**
+`notebooks/assets/atera_crop_he.jpg` (2.1 MB) and its `atera_crop_he.json` sidecar are the
+Crop's H&E overview, JPEG-encoded, plus the micrometres it covers. Those are the same
+downsampled pixels already published inside `atera_crop.zarr.zip`, re-encoded so that
+Tutorial 3 can draw its maps on tissue without installing the spatialdata stack; nothing new
+about the slide is disclosed. The attribution travels with the image, in the `licence` field
+of the JSON. Built by `prep/build_he_backdrop.py`.
+
 Changes made to the original: spatial subsetting to one window; restriction of the
 expression matrix to a 69-gene marker panel; image downsampling; and the addition of
 cell-type labels derived by us (see below). The full derivation is reproducible from the

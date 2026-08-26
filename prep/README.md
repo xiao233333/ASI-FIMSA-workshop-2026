@@ -127,6 +127,15 @@ To pick a different window, edit `crop_window.json` by hand (or retune
   cell table, the streamed panel-matrix extraction, the barcode-keyed join of cells
   to clusters and cell types.
 - `00`–`05` — the pipeline, one concern each.
+- **`build_he_backdrop.py`** — unnumbered, and deliberately outside the pipeline above.
+  Flattens the Crop's `images["he"]` into `notebooks/assets/atera_crop_he.jpg` plus an
+  `atera_crop_he.json` carrying the micrometre extent, computed from the element's own
+  transformation. Tutorial 3 fetches those two over `REPO_RAW` and draws its Section 6 maps
+  on them with nothing but `matplotlib` — it used to read the H&E out of the Crop with
+  `spatialdata`, which its install line never installs, so on Colab the backdrop was always
+  skipped. A **repo asset, not a Staged dataset**: it is not in `manifest.json` and
+  `upload_to_origins.sh` does not touch it. Re-run it after `04_build_crop.py` whenever the
+  Crop window changes, and copy the two files into the release tree.
 - `jobs/run_all.slurm` — the Bunya job.
 - `upload_to_origins.sh` — the publish step. **Gated.**
 
