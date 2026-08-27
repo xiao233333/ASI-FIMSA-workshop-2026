@@ -1,0 +1,268 @@
+{
+  "nb00_blobs": {
+    "file": "nb00_blobs.png",
+    "h": 349,
+    "heading": "## Step 3 -- check this session can reach the Workshop data",
+    "source": "00_setup_check.ipynb cell 6",
+    "w": 368
+  },
+  "nb01_atera_crop_he": {
+    "file": "nb01_atera_crop_he.jpg",
+    "h": 811,
+    "heading": "### 3.6 The Crop: cells on their own H&E",
+    "source": "01_read_and_visualise.ipynb cell 56",
+    "w": 1036
+  },
+  "nb01_atera_markers": {
+    "file": "nb01_atera_markers.jpg",
+    "h": 634,
+    "heading": "### 3.5 The same markers, at cell resolution",
+    "source": "01_read_and_visualise.ipynb cell 51",
+    "w": 1500
+  },
+  "nb01_atera_umap": {
+    "file": "nb01_atera_umap.png",
+    "h": 522,
+    "heading": "### 3.4 The same cells without their coordinates",
+    "source": "01_read_and_visualise.ipynb cell 49",
+    "w": 800
+  },
+  "nb01_atera_wholeslide": {
+    "file": "nb01_atera_wholeslide.jpg",
+    "h": 931,
+    "heading": "### 3.3 The whole slide, one dot per cell",
+    "source": "01_read_and_visualise.ipynb cell 47",
+    "w": 869
+  },
+  "nb01_atera_zoom": {
+    "file": "nb01_atera_zoom.jpg",
+    "h": 628,
+    "heading": "### 3.7 Zoom until you can see nuclei",
+    "source": "01_read_and_visualise.ipynb cell 58",
+    "w": 1290
+  },
+  "nb01_triptych": {
+    "file": "nb01_triptych.jpg",
+    "h": 577,
+    "heading": "### 4.2 The same square of tissue, three times",
+    "source": "01_read_and_visualise.ipynb cell 65",
+    "w": 1490
+  },
+  "nb01_visium_genes": {
+    "file": "nb01_visium_genes.jpg",
+    "h": 1188,
+    "heading": "### 1.6 Put four genes on the tissue",
+    "source": "01_read_and_visualise.ipynb cell 15",
+    "w": 1500
+  },
+  "nb01_xenium_boundaries": {
+    "file": "nb01_xenium_boundaries.jpg",
+    "h": 711,
+    "heading": "### 2.8 Draw the cell boundaries",
+    "source": "01_read_and_visualise.ipynb cell 39",
+    "w": 784
+  },
+  "nb01_xenium_dotplot": {
+    "file": "nb01_xenium_dotplot.png",
+    "h": 563,
+    "heading": "### 2.7 Cluster it",
+    "source": "01_read_and_visualise.ipynb cell 37",
+    "w": 912
+  },
+  "nb02_celltype_vs_niche": {
+    "file": "nb02_celltype_vs_niche.png",
+    "h": 590,
+    "heading": "### 5.5 Cell types against niches, in one table",
+    "source": "02_niche_analysis.ipynb cell 63",
+    "w": 840
+  },
+  "nb02_crop_cellres": {
+    "file": "nb02_crop_cellres.jpg",
+    "h": 643,
+    "heading": "### 1.3 The same tissue at cellular resolution",
+    "source": "02_niche_analysis.ipynb cell 17",
+    "w": 1240
+  },
+  "nb02_crop_overview": {
+    "file": "nb02_crop_overview.jpg",
+    "h": 553,
+    "heading": "### 1.2 Look at it",
+    "source": "02_niche_analysis.ipynb cell 13",
+    "w": 1290
+  },
+  "nb02_delaunay": {
+    "file": "nb02_delaunay.png",
+    "h": 565,
+    "heading": "### 3.1 See the graph before you trust it",
+    "source": "02_niche_analysis.ipynb cell 28",
+    "w": 727
+  },
+  "nb02_demo_neighbourhood": {
+    "file": "nb02_demo_neighbourhood.png",
+    "h": 553,
+    "heading": "### 2.1 Make it concrete first",
+    "source": "02_niche_analysis.ipynb cell 23",
+    "w": 1081
+  },
+  "nb02_hops_to_immune": {
+    "file": "nb02_hops_to_immune.jpg",
+    "h": 630,
+    "heading": "### 5.4 The payoff: how far is every cell from the immune niche?",
+    "source": "02_niche_analysis.ipynb cell 61",
+    "w": 1390
+  },
+  "nb02_k_sweep": {
+    "file": "nb02_k_sweep.jpg",
+    "h": 484,
+    "heading": "### 4.5 `k` is the spatial-scale knob",
+    "source": "02_niche_analysis.ipynb cell 47",
+    "w": 1500
+  },
+  "nb02_nhood_enrichment": {
+    "file": "nb02_nhood_enrichment.png",
+    "h": 606,
+    "heading": "### 3.1 See the graph before you trust it",
+    "source": "02_niche_analysis.ipynb cell 30",
+    "w": 831
+  },
+  "nb02_niche_composition": {
+    "file": "nb02_niche_composition.png",
+    "h": 543,
+    "heading": "### 4.1 What is each niche made of?",
+    "source": "02_niche_analysis.ipynb cell 38",
+    "w": 940
+  },
+  "nb02_niche_polygons": {
+    "file": "nb02_niche_polygons.png",
+    "h": 559,
+    "heading": "### 5.2 Niches as polygons",
+    "source": "02_niche_analysis.ipynb cell 54",
+    "w": 764
+  },
+  "nb02_niches_on_tissue": {
+    "file": "nb02_niches_on_tissue.png",
+    "h": 602,
+    "heading": "### 4.3 Put the niches back on the tissue",
+    "source": "02_niche_analysis.ipynb cell 42",
+    "w": 1391
+  },
+  "nb02_voronoi": {
+    "file": "nb02_voronoi.png",
+    "h": 595,
+    "heading": "### 4.4 A closer look: Voronoi tessellation",
+    "source": "02_niche_analysis.ipynb cell 45",
+    "w": 779
+  },
+  "nb03_bandwidth_sweep": {
+    "file": "nb03_bandwidth_sweep.png",
+    "h": 450,
+    "heading": "## 8. Sensitivity: does the answer depend on the number you chose?",
+    "source": "03_cell_cell_interaction_liana.ipynb cell 51",
+    "w": 787
+  },
+  "nb03_local_cxcl12": {
+    "file": "nb03_local_cxcl12.jpg",
+    "h": 1034,
+    "heading": "### 6.1 Now a pair chosen for its biology instead of its rank",
+    "source": "03_cell_cell_interaction_liana.ipynb cell 42",
+    "w": 1141
+  },
+  "nb03_local_top": {
+    "file": "nb03_local_top.jpg",
+    "h": 1034,
+    "heading": "## 6. Where in the tissue? Per-cell scores",
+    "source": "03_cell_cell_interaction_liana.ipynb cell 40",
+    "w": 1141
+  },
+  "nb03_panel_support": {
+    "file": "nb03_panel_support.png",
+    "h": 310,
+    "heading": "### 1.2 Does this panel support the analysis at all?",
+    "source": "03_cell_cell_interaction_liana.ipynb cell 13",
+    "w": 809
+  },
+  "nb03_proximity": {
+    "file": "nb03_proximity.png",
+    "h": 730,
+    "heading": "### 4.1 A second bandwidth, for a different scale",
+    "source": "03_cell_cell_interaction_liana.ipynb cell 29",
+    "w": 877
+  },
+  "nb03_spatial_ab": {
+    "file": "nb03_spatial_ab.png",
+    "h": 490,
+    "heading": "### 5.1 What did spatial weighting change, and one trap in answering that",
+    "source": "03_cell_cell_interaction_liana.ipynb cell 35",
+    "w": 1250
+  },
+  "nb03_top_pairs": {
+    "file": "nb03_top_pairs.png",
+    "h": 430,
+    "heading": "### 3.1 Read the top of this list sceptically",
+    "source": "03_cell_cell_interaction_liana.ipynb cell 23",
+    "w": 1310
+  },
+  "nb03_watched_pairs": {
+    "file": "nb03_watched_pairs.png",
+    "h": 1155,
+    "heading": "## 7. Ask the immunology directly",
+    "source": "03_cell_cell_interaction_liana.ipynb cell 46",
+    "w": 1344
+  },
+  "nb04_attention": {
+    "file": "nb04_attention.png",
+    "h": 468,
+    "heading": "## 8. Where is the model looking? (attention rollout)",
+    "source": "04_vit_gene_expression.ipynb cell 43",
+    "w": 1310
+  },
+  "nb04_marker_sparsity": {
+    "file": "nb04_marker_sparsity.jpg",
+    "h": 378,
+    "heading": "### 3.1 How sparse is each marker?",
+    "source": "04_vit_gene_expression.ipynb cell 22",
+    "w": 1426
+  },
+  "nb04_per_gene_r": {
+    "file": "nb04_per_gene_r.png",
+    "h": 490,
+    "heading": "## 7. Which genes are predictable from morphology?",
+    "source": "04_vit_gene_expression.ipynb cell 35",
+    "w": 640
+  },
+  "nb04_predicted_on_tissue": {
+    "file": "nb04_predicted_on_tissue.jpg",
+    "h": 905,
+    "heading": "### 7.2 Put it back on the tissue",
+    "source": "04_vit_gene_expression.ipynb cell 39",
+    "w": 927
+  },
+  "nb04_scatter_best_worst": {
+    "file": "nb04_scatter_best_worst.png",
+    "h": 400,
+    "heading": "### 7.1 The immunology talking point",
+    "source": "04_vit_gene_expression.ipynb cell 37",
+    "w": 1490
+  },
+  "nb04_spots_on_image": {
+    "file": "nb04_spots_on_image.jpg",
+    "h": 558,
+    "heading": "### 1.2 Line the spots up with the image",
+    "source": "04_vit_gene_expression.ipynb cell 13",
+    "w": 1079
+  },
+  "nb04_tiles": {
+    "file": "nb04_tiles.jpg",
+    "h": 318,
+    "heading": "## 2. Cut one H&E tile per spot",
+    "source": "04_vit_gene_expression.ipynb cell 17",
+    "w": 1184
+  },
+  "nb04_training": {
+    "file": "nb04_training.png",
+    "h": 340,
+    "heading": "## 6. Train",
+    "source": "04_vit_gene_expression.ipynb cell 32",
+    "w": 988
+  }
+}

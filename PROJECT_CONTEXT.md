@@ -102,6 +102,9 @@ The four Tutorials:
   (34 vendor clusters -> named cell types) and `prep/crop_window.json` (the Crop).
   `prep/cci_panel_genes.txt` is committed too but is a generated record, not a gate.
 - Vendored helper: `notebooks/voronoi.py` (from the parent course, patched — see Known issues)
+- Presenter deck: `slides/` — `extract_figures.py` (pulls figures out of an executed
+  `verify/output_*/` run) -> `figures/` + `figures/manifest.json` -> `build_deck.js`
+  -> `asi_fimsa_workshop_2026.pptx`. Untracked; regenerate rather than hand-edit the pptx.
 
 # Conventions that are easy to get wrong
 
@@ -504,3 +507,56 @@ The four Tutorials:
   **Do not set `WORKSHOP_DATA_DIR` for a whole-suite run**: Tutorial 1 treats it as
   authoritative and aborts if its own file is not in it, so it is a per-notebook override only.
 
+- 2026-08-27: **Presenter deck added (`slides/`, untracked).** 22 slides for the two hours:
+  title, the four-Tutorial overview, two slides on starting Colab, four slides per Tutorial,
+  a conclusion and a credits slide. Built with **pptxgenjs on the shared QIMR house master**
+  (`~/.claude/skills/academic-pptx/qimr_master.js`) — `NODE_PATH` must point at
+  `/home/uqxtan9/.hermes/node/lib/node_modules` or `require('pptxgenjs')` throws.
+  **The figures are the verified run's own output, not redrawn.** `slides/extract_figures.py`
+  base64-decodes them straight out of `verify/output_he_pushed/*.ipynb` (the clean run:
+  5/5 PASS, 0 errors, 40 figures, 17/45/23/101/162 s), keyed by (notebook, cell index), so a
+  slide shows exactly what a Participant's own session draws. It writes **PNG for line-art
+  charts and JPEG for H&E overlays and dense scatters** (19.4 MB of PNG became 8.3 MB mixed;
+  the 16 embedded come to 3.5 MB, deck 3.9 MB) plus a `manifest.json` of dimensions —
+  `build_deck.js` reads that instead of `M.pngSize()`, which parses an IHDR header and throws
+  on JPEG. **Re-run `extract_figures.py` against a newer `verify/output_*/` if a figure
+  changes; it clears `figures/` first and the cell indices are the thing that goes stale.**
+  Two layout templates chosen on the figure's aspect ratio (`WIDE_ASPECT = 2.4`): wider goes
+  full-width with the body beneath, narrower goes left with the body in a right-hand column.
+  `build_deck.js` carries a `fitCheck()` that estimates wrapped text height and warns at build
+  time — the first render put six bodies underneath their own source citation, and nothing
+  else catches that except looking at all 22 renders.
+  **QA path on Bunya** (the bundled pptx skill's `soffice.py` does not work here — no
+  `soffice`/`libreoffice`/`pdftoppm` on the host): `validate.py` from the pptx skill, then
+  `markitdown` for content, then LibreOffice via
+  `/scratch/project_mnt/S0010/Xiao/.cache/.singularity/libreoffice.sif` to PDF and the
+  `FSTimage` env's own `pdftoppm` to per-slide JPEG. All three pass.
+  **Numbers on the slides come from the embedded figure, not from this file** where the two
+  disagree: the ViT slides say mean r ≈ 0.31 because that is what the run's own chart is
+  titled, against the 0.325 recorded above. The caption says values move between runs.
+  Vocabulary follows `CONTEXT.md` throughout, including "one disease, three technologies".
+  **Found while writing it:** `README.md:43-50` still carries pre-renumber text — it calls the
+  ViT Tutorial "Tutorial 03" for both the GPU note and the 1.8 GB H&E download. The deck uses
+  the correct numbering (03 = LIANA+, 04 = ViT); the README was left alone.
+
+- 2026-08-27: **Deck extended to 34 slides — three background slides before each Tutorial's
+  exhibits.** Each Tutorial now opens on a slide whose title names it ("Tutorial 2: a cell-type
+  list is a census, not an architecture"), which is how the deck does wayfinding — there are no
+  section dividers. Per Tutorial: 3 background, then the exhibits. **Six of the twelve reuse
+  figures the exhibit slides had left on the floor** — the whole-slide Atera map, the 900-cell
+  synthetic neighbourhood demo, the Delaunay graph, the cell-type proximity matrix, the spots
+  lined up on the H&E, and the marker-sparsity panels. `nb01` cell 49 (the Atera UMAP) was added
+  to `extract_figures.py` for this and is extracted but unused.
+  The other six are built: three tables (capture vs imaging, three routes to a niche, the five
+  LIANA+ scores) and three panel rows (SpatialData elements, the ligand–receptor claim, the parts
+  of a Transformer). Slide 3's Colab steps and the conclusion slide were refactored onto the same
+  **`cardRow()`** helper, so panel geometry lives in one place.
+  **`rowH` on a pptxgenjs table is a minimum, not a height.** LibreOffice grows a row to fit its
+  longest cell, so a table whose cells wrap pushes its real bottom edge well past
+  `y + rows * rowH` and lands on whatever was placed beneath it. Two slides were built that way
+  and both had to have their bullets moved down; `fitCheck()` does not see this, because it only
+  measures bulleted bodies. Leave clearance under a table, or shorten the cells.
+  **A card heading that wraps needs the room reserved for it**: `headH` sized for one line puts
+  the second line on top of the detail text below (the Transformer slide, twice). `cardRow` takes
+  `headY`/`headH`/`detailY` per call for exactly this.
+  Deck 5.3 MB, 34 slides, notes on all of them, `validate.py` clean, all 34 rendered and inspected.
